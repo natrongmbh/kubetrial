@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+spec:
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      serviceAccountName: kubetrial-admin
+      containers:
+      - name: backend
+        image: ghcr.io/natrongmbh/kubetrial-backend:latest
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "100m"
+        env:
+          - name: CORS
+            value: "*"
+          - name: JWT_SECRET
+            value: ""
+          - name: GITHUB_CLIENT_ID
+            value: ""
+          - name: GITHUB_CLIENT_SECRET
+            value: ""
+          - name: GITHUB_ORGANIZATION
+            value: ""
+        ports:
+        - containerPort: 8000
+          name: http
