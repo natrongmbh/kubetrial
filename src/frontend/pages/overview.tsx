@@ -1,4 +1,5 @@
 import { NextPage } from "next"
+import Stats from "../components/overview/Stats";
 import { User, useUserContext } from "../contexts/userContext"
 
 const Dashboard: NextPage = () => {
@@ -18,8 +19,9 @@ const Dashboard: NextPage = () => {
                 className="grid sm:grid-cols-2 gap-4"
             >
                 <div
-                    className="w-full"
+                    className="w-full col-span-2"
                 >
+                    <Stats />
                 </div>
             </div>
         </div>
