@@ -1,4 +1,5 @@
 import { NextPage } from "next"
+import ClusterInfo from "../components/overview/CluserInfo";
 import Stats from "../components/overview/Stats";
 import { User, useUserContext } from "../contexts/userContext"
 
@@ -22,6 +23,11 @@ const Dashboard: NextPage = () => {
                     className="w-full col-span-2"
                 >
                     <Stats />
+                </div>
+                <div
+                    className="w-full col-span-2"
+                >
+                    <ClusterInfo />
                 </div>
             </div>
         </div>
