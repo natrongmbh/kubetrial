@@ -83,18 +83,12 @@ You can deploy kubetrial in your Kubernetes cluster, but you have to set all the
 
 #### Frontend
 
-- `ENV_GITHUB_CLIENT_ID` (required): Set the GitHub client ID.
-- `ENV_GITHUB_REDIRECT_URI` (required): Set the GitHub redirect URI. (e.g. `https://<url-from-frontend>`)
-- `ENV_GITHUB_OAUTH_URI` (required): Set the GitHub OAuth URI. (e.g. `https://<url-from-backend>/api/auth/github`)
+*none*
 
 #### Backend
 
 - `CORS` (optional): Set CORS headers for the API.  
   Default: `*`
-- `JWT_SECRET_KEY` (optional): Set the JWT secret key.  
-  Default: random string of 32 characters.
-- `GITHUB_CALLBACK_URL` (optional): Set the callback URL for the GitHub OAuth.  
-  Default: `http://localhost:8000/auth/github/callback`
-- `GITHUB_CLIENT_ID` (required): Set the GitHub client ID.
-- `GITHUB_CLIENT_SECRET` (required): Set the GitHub client secret.
-- `GITHUB_ORGANIZATION` (required): Set the GitHub organization.
+- `JWT_SECRET_KEY` (optional): Set the JWT secret key.
+- `ADMIN_PASSWORD` (optional): Set the admin password.
+  Default: `admin`

@@ -128,3 +128,4 @@ go.work
 
 .WEBP
 kubernetes_local/
+.DS_Store

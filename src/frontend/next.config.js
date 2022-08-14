@@ -7,9 +7,7 @@ module.exports = {
   trailingSlash: true,
   nextConfig,
   publicRuntimeConfig: {
-    ENV_GITHUB_CLIENT_ID: process.env.ENV_GITHUB_CLIENT_ID,
-    ENV_GITHUB_REDIRECT_URI: process.env.ENV_GITHUB_REDIRECT_URI,
-    ENV_GITHUB_OAUTH_URI: process.env.ENV_GITHUB_OAUTH_URI,
+    ENV_PLACEHOLDER: process.env.ENV_PLACEHOLDER,
   },
   images: {
     // loader: "custom",

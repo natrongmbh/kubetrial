@@ -1,64 +1,135 @@
-import { useEffect } from "react";
-import { useUserContext } from "../../contexts/userContext"
-import { GithubIcon } from "../../lib/Icons";
-import getConfig from "next/config";
-import Image from "next/image";
-import env from "@beam-australia/react-env";
-import { classNames } from "../../lib/design";
+import { LockClosedIcon } from '@heroicons/react/solid'
+import Image from 'next/image'
+import { useRouter } from 'next/router'
+import { useState } from 'react'
+import { useUserContext } from '../../contexts/userContext'
+import { AlertType, DefaultAlertMessage } from '../alerts/Alerts'
+import Button, { ButtonType } from '../general/Button'
 
-const { publicRuntimeConfig: config } = getConfig();
+export default function LoginForm() {
 
-const LoginForm = () => {
+    const { loginUser }: any = useUserContext();
+    const router = useRouter();
 
-    const { signInWithGithub}: any = useUserContext();
+    const [username, setUsername] = useState('')
+    const [password, setPassword] = useState('')
 
-    const handleGithubLogin = () => {
-        window.open(
-            `https://github.com/login/oauth/authorize?scope=user&client_id=${config.ENV_GITHUB_CLIENT_ID}&redirect_uri=${config.ENV_GITHUB_REDIRECT_URI}`,
-            "_self"
-        );
+    const handleSubmit = async (e: any) => {
+        e.preventDefault()
+        if (username && password) {
+            try {
+                await loginUser(username, password);
+                router.push('/overview')
+            } catch (error) {
+                DefaultAlertMessage('Login failed', 'Please check your credentials and try again.', AlertType.Error)
+            }
+        } else {
+            DefaultAlertMessage('Error', 'Please fill in a valid E-Mail and Password', AlertType.Error)
+        }
     }
 
-    useEffect(() => {
-        const url = window.location.href;
-        const code = url.split("?code=")[1];
-
-        if (code) {
-            signInWithGithub(code);
-        }
-    }, [signInWithGithub]);
 
     return (
-        <div
-            className="absolute top-1/2 sm:left-1/2 sm:-translate-x-1/2 -translate-y-1/2 sm:w-4/6 w-full bg-opacity-90 sm:bg-gray-50 sm:rounded-lg sm:shadow-lg py-10"
-        >
-            <div
-                className="h-32 w-32 relative m-auto mb-5"
-            >
-                <Image
-                    className="pointer-events-none"
-                    src="/images/logo/kubetrial_logo_color.png"
-                    alt="KubeTrial Logo"
-                    objectFit="contain"
-                    layout="fill"
-                    priority={true}
-                />
+        <>
+            <div className="min-h-full flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+                <div className="max-w-md w-full space-y-8">
+                    <div>
+                        <div
+                            className="h-32 w-32 relative m-auto mb-5"
+                        >
+                            <Image
+                                className="pointer-events-none"
+                                src="/images/logo/kubetrial_logo_color.png"
+                                alt="KubeTrial Logo"
+                                objectFit="contain"
+                                layout="fill"
+                                priority={true}
+                            />
+                        </div>
+                        <h2 className="mt-6 text-center text-3xl tracking-tight font-GilroyBold text-primary">
+                            KubeTrial
+                        </h2>
+                        <p className="mt-2 text-center text-sm text-gray-600">
+                            A Kubernetes Application Trial Management Tool
+                        </p>
+                    </div>
+                    <div className="mt-8 space-y-6">
+                        <input type="hidden" name="remember" defaultValue="true" />
+                        <div className="rounded-md shadow-sm -space-y-px">
+                            <div>
+                                <label htmlFor="username" className="sr-only">
+                                    Username
+                                </label>
+                                <input
+                                    id="username"
+                                    name="username"
+                                    type="text"
+                                    autoComplete="text"
+                                    required
+                                    className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm"
+                                    placeholder="Username"
+                                    onChange={(e) => setUsername(e.target.value)}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter') {
+                                            handleSubmit(e)
+                                        }
+                                    }}
+                                />
+                            </div>
+                            <div>
+                                <label htmlFor="password" className="sr-only">
+                                    Password
+                                </label>
+                                <input
+                                    id="password"
+                                    name="password"
+                                    type="password"
+                                    autoComplete="current-password"
+                                    required
+                                    className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm"
+                                    placeholder="Password"
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter') {
+                                            handleSubmit(e)
+                                        }
+                                    }}
+                                />
+                            </div>
+                        </div>
+
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center">
+                                <input
+                                    id="remember-me"
+                                    name="remember-me"
+                                    type="checkbox"
+                                    className="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded"
+                                />
+                                <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900">
+                                    Remember me
+                                </label>
+                            </div>
+
+                            <div className="text-sm">
+                                <a href="#" className="font-medium text-primary hover:text-primary">
+                                    Forgot your password?
+                                </a>
+                            </div>
+                        </div>
+
+                        <div>
+                            <Button
+                                buttonText='Log In'
+                                buttonType={ButtonType.Primary}
+                                buttonIcon={<LockClosedIcon className='w-5 h-5' />}
+                                widthString='w-full'
+                                onClick={handleSubmit}
+                            />
+                        </div>
+                    </div>
+                </div>
             </div>
-            <h1 className="text-center text-primary sm:text-5xl text-3xl font-GilroyHeavy">KubeTrial</h1>
-            <div
-                className="bg-primary text-white w-56 py-2 px-4 m-auto cursor-pointer rounded-lg mt-10 hover:scale-105 transition-all duration-150 ease-in-out"
-                onClick={handleGithubLogin}
-            >
-                <span
-                    className="inline"
-                >
-                    <span>
-                        <GithubIcon color="white" width={26} height={26} />
-                    </span> Continue with Github
-                </span>
-            </div>
-        </div>
+        </>
     )
 }
-
-export default LoginForm;

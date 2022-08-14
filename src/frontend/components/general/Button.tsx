@@ -8,7 +8,7 @@ export enum ButtonType {
     SecondaryOutline = "secondaryOutline",
 }
 
-export default function Button({ widthString, inline, buttonType, buttonText, buttonIcon, onClick }: { widthString?: any | "", inline?: any, buttonType: ButtonType, buttonText: string, buttonIcon?: any, onClick?: () => void }) {
+export default function Button({ widthString, inline, buttonType, buttonText, buttonIcon, onClick }: { widthString?: any | "", inline?: any, buttonType: ButtonType, buttonText: string, buttonIcon?: any, onClick?: (e: any) => void }) {
 
     const hoverAnimationClasses = "active:hover:scale-105 transition-all duration-150 ease-in-out";
     const buttonBackgroundHover = "absolute right-0 w-10 h-32 -mt-10 rotate-12 transition-all duration-700 translate-x-12 opacity-10 group-hover:-translate-x-96 ease"
