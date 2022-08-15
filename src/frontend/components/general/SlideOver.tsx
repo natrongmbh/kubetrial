@@ -1,6 +1,8 @@
 import { forwardRef, Fragment, useEffect, useImperativeHandle, useState } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
 import { XIcon } from '@heroicons/react/outline'
+import { classNames } from '../../lib/design'
+import Swal from 'sweetalert2'
 
 const SlideOver = ({ children, title, description, isOpen, setIsOpen }: any) => {
 
@@ -15,21 +17,35 @@ const SlideOver = ({ children, title, description, isOpen, setIsOpen }: any) => 
     return (
         <Transition.Root show={open} as={Fragment}>
             <Dialog as="div" className="relative z-50" onClose={setIsOpen}>
-                <div className="fixed inset-0" />
+                <Transition.Child
+                    as={Fragment}
+                    enter="transform transition ease-in-out duration-300 sm:duration-500"
+                    enterFrom="bg-opacity-0"
+                    enterTo="bg-opacity-30"
+                    leave="transform transition ease-in-out duration-300 sm:duration-500"
+                    leaveFrom="bg-opacity-30"
+                    leaveTo="bg-opacity-0"
+                >
+                    <div
+                        className={classNames(
+                            "fixed inset-0 bg-black bg-opacity-20 transition-all duration-150 ease-in-out",
+                        )}
+                    />
+                </Transition.Child>
 
                 <div className="fixed inset-0 overflow-hidden">
                     <div className="absolute inset-0 overflow-hidden">
                         <div className="pointer-events-none fixed inset-y-0 right-0 flex max-w-full pl-10">
                             <Transition.Child
                                 as={Fragment}
-                                enter="transform transition ease-in-out duration-500 sm:duration-700"
+                                enter="transform transition ease-in-out duration-300 sm:duration-500"
                                 enterFrom="translate-x-full"
                                 enterTo="translate-x-0"
-                                leave="transform transition ease-in-out duration-500 sm:duration-700"
+                                leave="transform transition ease-in-out duration-300 sm:duration-500"
                                 leaveFrom="translate-x-0"
                                 leaveTo="translate-x-full"
                             >
-                                <Dialog.Panel className="pointer-events-auto w-screen max-w-2xl">
+                                <Dialog.Panel className="pointer-events-auto w-screen max-w-4xl">
                                     <div className="flex h-full flex-col bg-white shadow-xl rounded-tl-xl">
                                         {/* Header */}
                                         <div className=" bg-gradient-to-r from-primary to-primary-dark rounded-tl-xl px-4 py-6 sm:px-6 shadow-lg">

@@ -1,11 +1,5 @@
-/* This example requires Tailwind CSS v2.0+ */
-import { PencilIcon, TrashIcon } from '@heroicons/react/outline';
-import { ArchiveIcon, CheckCircleIcon, ChevronRightIcon, LinkIcon, MailIcon, TagIcon } from '@heroicons/react/solid'
-import { useState } from 'react';
-import SlideOver from '../general/SlideOver';
 import AppListItem from './AppListItem';
-import CreateAppForm from './CreateAppForm';
-import EditAppForm from './EditAppForm';
+import { HelmPatchValue } from './CreateAppForm';
 
 export interface App {
     id: number;
@@ -14,6 +8,7 @@ export interface App {
     helmRepositoryUrl: string;
     helmChartName: string;
     helmChartVersion: string;
+    helmPatchValues: any;
 }
 
 const apps = [
@@ -23,7 +18,12 @@ const apps = [
         description: 'Postgresql is a relational database management system (RDBMS)',
         helmRepositoryUrl: 'https://charts.bitnami.com/bitnami',
         helmChartName: 'postgresql',
-        helmChartVersion: '14.5.0'
+        helmChartVersion: '14.5.0',
+        helmPatchValues: {
+            'Postgres Password': 'global.postgresql.auth.postgresPassword',
+            'Postgres User': 'global.postgresql.auth.postgresUser',
+            'Postgres Database': 'global.postgresql.auth.postgresDatabase',
+        }
     },
     {
         id: 2,
@@ -31,7 +31,10 @@ const apps = [
         description: 'Redis is a key-value store',
         helmRepositoryUrl: 'https://charts.bitnami.com/bitnami',
         helmChartName: 'redis',
-        helmChartVersion: '14.5.0'
+        helmChartVersion: '7.0.4',
+        helmPatchValues: {
+            'Redis Password': 'global.redis.auth.redisPassword',
+        }
     },
 ]
 
