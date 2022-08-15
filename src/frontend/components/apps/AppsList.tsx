@@ -1,50 +1,48 @@
+import { useEffect, useState } from 'react';
+import Api from '../../config/Api';
 import AppListItem from './AppListItem';
 import { HelmPatchValue } from './CreateAppForm';
 
 export interface App {
-    id: number;
+    ID: number;
     name: string;
     description: string;
-    helmRepositoryUrl: string;
-    helmChartName: string;
-    helmChartVersion: string;
-    helmPatchValues: any;
+    helm_chart_repository_url: string;
+    helm_chart_name: string;
+    helm_chart_version: string;
+    helm_chart_patch_values: HelmPatchValue[];
 }
 
-const apps = [
-    {
-        id: 1,
-        name: 'Postgresql',
-        description: 'Postgresql is a relational database management system (RDBMS)',
-        helmRepositoryUrl: 'https://charts.bitnami.com/bitnami',
-        helmChartName: 'postgresql',
-        helmChartVersion: '14.5.0',
-        helmPatchValues: {
-            'Postgres Password': 'global.postgresql.auth.postgresPassword',
-            'Postgres User': 'global.postgresql.auth.postgresUser',
-            'Postgres Database': 'global.postgresql.auth.postgresDatabase',
-        }
-    },
-    {
-        id: 2,
-        name: 'Redis',
-        description: 'Redis is a key-value store',
-        helmRepositoryUrl: 'https://charts.bitnami.com/bitnami',
-        helmChartName: 'redis',
-        helmChartVersion: '7.0.4',
-        helmPatchValues: {
-            'Redis Password': 'global.redis.auth.redisPassword',
-        }
-    },
-]
+export interface HelmChartPatchValue {
+    name: string;
+    value: string;
+}
 
 const AppsList = () => {
+
+    const [apps, setApps] = useState<App[]>([]);
+    
+    useEffect(() => {
+        (
+            async () => {
+                try {
+                    const { data } = await Api.get('/apps');
+                    if (data) {
+                        setApps(data);
+                        console.log(apps[0].helm_chart_patch_values[0].value);
+                    }
+                } catch (error) {
+                    console.log(error);
+                }
+            }
+        )()
+    }, [apps]);
 
     return (
         <div className="bg-white shadow overflow-hidden sm:rounded-md">
             <ul role="list" className="divide-y divide-gray-200">
                 {apps.map((app: App) => (
-                    <li key={app.id}>
+                    <li key={app.ID}>
                         <AppListItem app={app} />
                     </li>
                 ))}

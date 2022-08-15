@@ -18,7 +18,9 @@ func Setup(app *fiber.App) {
 	v1.Get("/clusterinfo", controllers.GetClusterInfo)
 
 	// App
-	// v1.Get("/apps", controllers.GetApps)
-	// v1.Get("/apps/:id", controllers.GetApp)
+	v1.Get("/apps", controllers.GetApps)
+	v1.Get("/apps/:id", controllers.GetApp)
 	v1.Post("/apps", controllers.CreateApp)
+	v1.Put("/apps/:id", controllers.UpdateApp)
+	v1.Delete("/apps/:id", controllers.DeleteApp)
 }

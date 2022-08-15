@@ -15,13 +15,13 @@ const AppListItem = ({ app }: any) => {
     } catch (error) {
         console.log(error)
         appData = {
-            id: -1,
+            ID: -1,
             name: "",
             description: "",
-            helmRepositoryUrl: "",
-            helmChartName: "",
-            helmChartVersion: "",
-            helmPatchValues: {}
+            helm_chart_repository_url: "",
+            helm_chart_version: "",
+            helm_chart_name: "",
+            helm_chart_patch_values: [],
         }
     }
 
@@ -51,18 +51,18 @@ const AppListItem = ({ app }: any) => {
                                 <p className="text-sm font-GilroyMedium text-primary truncate group-hover:text-gray-500 transition-all duration-150 ease-in-out">{appData.name}</p>
                                 <p className="mt-2 flex items-center text-sm text-gray-500 group-hover:text-gray-500 transition-all duration-150 ease-in-out">
                                     <LinkIcon className="flex-shrink-0 mr-1.5 h-5 w-5 text-black group-hover:text-gray-500 transition-all duration-150 ease-in-out" aria-hidden="true" />
-                                    <span className="truncate">{appData.helmRepositoryUrl}</span>
+                                    <span className="truncate">{appData.helm_chart_repository_url}</span>
                                 </p>
                             </div>
                             <div className="">
                                 <div>
                                     <p className="sm:mt-0 mt-2 flex items-center text-sm text-gray-500 group-hover:text-gray-500 transition-all duration-150 ease-in-out">
                                         <ArchiveIcon className="flex-shrink-0 mr-1.5 h-5 w-5 text-black group-hover:text-gray-500 transition-all duration-150 ease-in-out" aria-hidden="true" />
-                                        {appData.helmChartName}
+                                        {appData.helm_chart_name}
                                     </p>
                                     <p className="mt-2 flex items-center text-sm text-gray-500 group-hover:text-gray-500 transition-all duration-150 ease-in-out">
                                         <TagIcon className="flex-shrink-0 mr-1.5 h-5 w-5 text-black group-hover:text-gray-500 transition-all duration-150 ease-in-out" aria-hidden="true" />
-                                        {appData.helmChartVersion}
+                                        {appData.helm_chart_version}
                                     </p>
                                 </div>
                             </div>

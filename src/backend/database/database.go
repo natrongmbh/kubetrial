@@ -33,5 +33,6 @@ func InitDB() error {
 	// migrate the schema
 	DBConn.Debug().AutoMigrate(&models.User{})
 	DBConn.Debug().AutoMigrate(&models.App{})
+	DBConn.Debug().AutoMigrate(&models.HelmChartPatchValue{})
 	return nil
 }
