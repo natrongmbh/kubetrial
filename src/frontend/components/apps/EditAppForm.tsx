@@ -69,7 +69,6 @@ const EditAppForm = ({ app, setIsOpen }: any) => {
                 helm_chart_patch_values: helmPatchValues,
             }
 
-            console.log(updatedApp)
             Api.put(`/apps/${appData.ID}`, updatedApp)
                 .then(() => {
                     DefaultAlert("App updated successfully", AlertType.Success)

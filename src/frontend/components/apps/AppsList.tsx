@@ -4,7 +4,7 @@ import AppListItem from './AppListItem';
 import { HelmPatchValue } from './CreateAppForm';
 
 export interface App {
-    ID: number;
+    ID: number | undefined;
     name: string;
     description: string;
     helm_chart_repository_url: string;
@@ -29,14 +29,13 @@ const AppsList = () => {
                     const { data } = await Api.get('/apps');
                     if (data) {
                         setApps(data);
-                        console.log(apps[0].helm_chart_patch_values[0].value);
                     }
                 } catch (error) {
                     console.log(error);
                 }
             }
         )()
-    }, [apps]);
+    }, []);
 
     return (
         <div className="bg-white shadow overflow-hidden sm:rounded-md">

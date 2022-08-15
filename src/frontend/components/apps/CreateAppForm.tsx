@@ -1,12 +1,14 @@
 import { ArchiveIcon, BookmarkAltIcon, KeyIcon, LinkIcon, PlusIcon, TagIcon, TrashIcon } from "@heroicons/react/outline";
 import { useState } from "react";
 import Swal from "sweetalert2";
+import Api from "../../config/Api";
 import { GithubIcon, GitIcon } from "../../lib/Icons";
-import { AlertType, DefaultAlertMessage } from "../alerts/Alerts";
+import { AlertType, DefaultAlert, DefaultAlertMessage } from "../alerts/Alerts";
 import Button, { ButtonType } from "../general/Button";
 import Input from "../general/form/Input";
 import InputWithLeadingIcon from "../general/form/InputWithLeadingIcon";
 import Textarea from "../general/form/Textarea";
+import { App } from "./AppsList";
 
 export interface HelmPatchValue {
     [key: string]: string;
@@ -15,13 +17,14 @@ export interface HelmPatchValue {
 const CreateAppForm = ({ setIsOpen }: any) => {
 
     // map of HelmPatchValue
-    const [helmPatchValues, setHelmPatchValues] = useState<HelmPatchValue>({});
+    const [helmPatchValues, setHelmPatchValues] = useState<HelmPatchValue[]>([]);
 
     const [valueName, setValueName] = useState("");
     const [valueString, setValueString] = useState("");
 
     // get the keys of the map
     const helmPatchValuesKeys = Object.keys(helmPatchValues);
+
 
     const [appName, setAppName] = useState("");
     const [appDescription, setAppDescription] = useState("");
@@ -30,17 +33,40 @@ const CreateAppForm = ({ setIsOpen }: any) => {
     const [appHelmChartVersion, setAppHelmChartVersion] = useState("");
 
     const handleSave = () => {
-        DefaultAlertMessage("Saved", "Your app has been saved.", AlertType.Success);
-        setIsOpen(false);
+        if (appName === "" || appDescription === "" || appHelmRepositoryUrl === "" || appHelmChartName === "" || appHelmChartVersion === "") {
+            DefaultAlert("Please fill in all fields", AlertType.Error);
+            return;
+        }
+        const updatedApp: App = {
+            ID: undefined,
+            name: appName,
+            description: appDescription,
+            helm_chart_repository_url: appHelmRepositoryUrl,
+            helm_chart_name: appHelmChartName,
+            helm_chart_version: appHelmChartVersion,
+            helm_chart_patch_values: helmPatchValues,
+        }
+
+        Api.post("/apps", updatedApp)
+            .then(() => {
+                DefaultAlert("App created", AlertType.Success);
+                setIsOpen(false);
+            }).catch(() => {
+                DefaultAlert("Error creating app", AlertType.Error);
+            }); 
     }
 
     const handleAddValue = (e: any) => {
 
         if (valueName.length > 0 && valueString.length > 0) {
-            setHelmPatchValues({
-                ...helmPatchValues,
-                [valueName]: valueString,
-            });
+            for (let i = 0; i < helmPatchValues.length; i++) {
+                if (helmPatchValues[i].name === valueName) {
+                    return;
+                }
+            }
+            setHelmPatchValues([...helmPatchValues, { name: valueName, value: valueString }]);
+
+
             setValueName("");
             setValueString("");
 
@@ -145,57 +171,69 @@ const CreateAppForm = ({ setIsOpen }: any) => {
             <div
                 className="flex sm:flex-wrap sm:flex-row flex-col  gap-4"
             >
-                {helmPatchValuesKeys.map((key: string, index: number) => {
-                    return (
-                        <div
-                            key={index}
-                            className="relative flex bg-gray-200 w-auto py-2 pl-4 pr-12 rounded-lg shadow-md"
-                        >
-                            <div
-                                className="text-sm"
-                            >
-                                <span
-                                    className="font-GilroyBold"
+                {
+                    Array.isArray(helmPatchValuesKeys) && helmPatchValuesKeys.length > 0 ?
+                        helmPatchValuesKeys.map((key: string, index: number) => {
+                            return (
+                                <div
+                                    key={index}
+                                    className="relative flex bg-gray-200 w-auto py-2 pl-4 pr-12 rounded-lg shadow-md"
                                 >
-                                    {key}
-                                </span>
-                                <br/>
-                                <span
-                                    className="font-GilroyLight"
-                                >
-                                    {helmPatchValues[key]}
-                                </span>
-                            </div>
-                            <div
-                                className="absolute right-3"
-                            >
-                                <button
-                                    className="text-red-500 hover:text-red-600"
-                                    onClick={() => {
+                                    <div
+                                        className="text-sm"
+                                    >
+                                        <span
+                                            className="font-GilroyBold"
+                                        >
+                                            {helmPatchValues[index] && helmPatchValues[index].name}
+                                        </span>
+                                        <br />
+                                        <span
+                                            className="font-GilroyLight"
+                                        >
+                                            {helmPatchValues[index] && helmPatchValues[index].value}
+                                        </span>
+                                    </div>
+                                    <div
+                                        className="absolute right-3"
+                                    >
+                                        <button
+                                            className="text-red-500 hover:text-red-600"
+                                            onClick={() => {
 
-                                        Swal.fire({
-                                            title: 'Are you sure?',
-                                            text: "You won't be able to revert this!",
-                                            icon: 'warning',
-                                            showCancelButton: true,
-                                            confirmButtonColor: '#4285F4',
-                                        }).then((result) => {
-                                            if (result.value) {
-                                                const newHelmPatchValues = { ...helmPatchValues };
-                                                delete newHelmPatchValues[key];
-                                                setHelmPatchValues(newHelmPatchValues);
-                                                DefaultAlertMessage("Deleted", "Your value has been deleted.", AlertType.Success);
-                                            }
-                                        })
-                                    }}
-                                >
-                                    <TrashIcon className="w-5 h-5" />
-                                </button>
-                            </div>
+                                                Swal.fire({
+                                                    title: 'Are you sure?',
+                                                    text: "You won't be able to revert this!",
+                                                    icon: 'warning',
+                                                    showCancelButton: true,
+                                                    confirmButtonColor: '#4285F4',
+                                                }).then((result) => {
+                                                    if (result.value) {
+                                                        // remove the value from the array
+                                                        const newHelmPatchValues = [...helmPatchValues];
+                                                        newHelmPatchValues.splice(index, 1);
+                                                        setHelmPatchValues(newHelmPatchValues);
+                                                        // remove the key from the array
+                                                        const newHelmPatchValuesKeys = [...helmPatchValuesKeys];
+                                                        newHelmPatchValuesKeys.splice(index, 1);
+                                                        DefaultAlertMessage("Deleted", "Your value has been deleted.", AlertType.Success);
+                                                    }
+                                                })
+                                            }}
+                                        >
+                                            <TrashIcon className="w-5 h-5" />
+                                        </button>
+                                    </div>
+                                </div>
+                            )
+
+                        }) :
+                        <div className="flex justify-center">
+                            <p className="text-sm font-GilroyMedium text-gray-500">
+                                No values added yet.
+                            </p>
                         </div>
-                    );
                 }
-                )}
 
             </div>
 
