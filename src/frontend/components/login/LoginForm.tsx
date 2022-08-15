@@ -1,4 +1,5 @@
 import { LockClosedIcon } from '@heroicons/react/solid'
+import Cookies from 'js-cookie'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
 import { useState } from 'react'
@@ -11,14 +12,15 @@ export default function LoginForm() {
     const { loginUser }: any = useUserContext();
     const router = useRouter();
 
-    const [username, setUsername] = useState('')
+    const [username, setUsername] = useState(Cookies.get('username') || '');
     const [password, setPassword] = useState('')
+    const [remember, setRemember] = useState(false)
 
     const handleSubmit = async (e: any) => {
         e.preventDefault()
         if (username && password) {
             try {
-                await loginUser(username, password);
+                await loginUser(username, password, remember);
                 router.push('/overview')
             } catch (error) {
                 DefaultAlertMessage('Login failed', 'Please check your credentials and try again.', AlertType.Error)
@@ -65,6 +67,7 @@ export default function LoginForm() {
                                     name="username"
                                     type="text"
                                     autoComplete="text"
+                                    value={username}
                                     required
                                     className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm"
                                     placeholder="Username"
@@ -105,6 +108,7 @@ export default function LoginForm() {
                                     name="remember-me"
                                     type="checkbox"
                                     className="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded"
+                                    onChange={(e) => setRemember(e.target.checked)}
                                 />
                                 <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900">
                                     Remember me
@@ -113,7 +117,7 @@ export default function LoginForm() {
 
                             <div className="text-sm">
                                 <a href="#" className="font-medium text-primary hover:text-primary">
-                                    Forgot your password?
+                                    Got a trial code?
                                 </a>
                             </div>
                         </div>

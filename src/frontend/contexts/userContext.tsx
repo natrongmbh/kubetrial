@@ -50,7 +50,7 @@ export const UserContextProvider = ({ children }: Props) => {
         loadUserFromCookie();
     }, []);
 
-    const loginUser = async (username: string, password: string) => {
+    const loginUser = async (username: string, password: string, remember: boolean) => {
         const { data: data } = await Api.post('/auth', {
             username,
             password,
@@ -65,6 +65,9 @@ export const UserContextProvider = ({ children }: Props) => {
             }
         }
         Cookies.set('token', data["token"]);
+        if (remember) {
+            Cookies.set('username', username);
+        }
         DefaultAlert("Logged in", AlertType.Success);
     }
 
