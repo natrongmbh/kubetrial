@@ -20,7 +20,8 @@ const AppListItem = ({ app }: any) => {
             description: "",
             helmRepositoryUrl: "",
             helmChartName: "",
-            helmChartVersion: ""
+            helmChartVersion: "",
+            helmPatchValues: {}
         }
     }
 

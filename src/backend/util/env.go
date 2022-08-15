@@ -5,6 +5,7 @@ import (
 
 	"github.com/natrongmbh/kubetrial/database"
 	"github.com/natrongmbh/kubetrial/models"
+	"golang.org/x/crypto/bcrypt"
 )
 
 var (
@@ -33,11 +34,22 @@ func LoadEnv() error {
 		Avatar_URL: "https://www.gravatar.com/avatar/",
 	}
 
-	if err = CreateUser(adminUser); err != nil {
+	if err = CreateUser(adminUser); err != nil && err.Error() != "User already exists" {
 		return err
 	} else {
-		UpdateUser(adminUser)
-		InfoLogger.Println("Updated password for user: admin")
+		// check if current password is ADMIN_PASSWORD
+		var user models.User
+		err = database.DBConn.Where("username = ?", adminUser.Username).First(&user).Error
+		if err != nil {
+			return err
+		}
+		// decrypt password
+		err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(adminUser.Password))
+		if err != nil {
+			// update password
+			UpdateUser(adminUser)
+			InfoLogger.Println("Updated password for user: admin")
+		}
 	}
 
 	if JWT_SECRET_KEY = os.Getenv("JWT_SECRET_KEY"); JWT_SECRET_KEY == "" {

@@ -60,7 +60,6 @@ func CheckLogin(c *fiber.Ctx) error {
 	}
 
 	smallUser := models.User{
-		ID:         user.ID,
 		Username:   user.Username,
 		Name:       user.Name,
 		Avatar_URL: user.Avatar_URL,
@@ -124,7 +123,7 @@ func CheckAuth(c *fiber.Ctx) (models.User, error) {
 	}
 
 	// check if user exists in database with ID
-	user, err := util.GetUserByID(int(claims["id"].(float64)))
+	user, err := util.GetUserByID(uint(claims["id"].(float64)))
 	if err != nil {
 		return models.User{}, err
 	}

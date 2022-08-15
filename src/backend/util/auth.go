@@ -15,10 +15,10 @@ var (
 	JWT_SECRET_KEY string
 )
 
-func GetUserByID(id int) (models.User, error) {
+func GetUserByID(id uint) (models.User, error) {
 	user := models.User{}
 
-	err := database.DBConn.First(&user, id).Error
+	err := database.DBConn.Where("id = ?", id).First(&user).Error
 	if err != nil {
 		return models.User{}, err
 	}
@@ -26,6 +26,7 @@ func GetUserByID(id int) (models.User, error) {
 }
 
 func GetUserByUsername(username string) (models.User, error) {
+
 	user := models.User{}
 
 	err := database.DBConn.Where("username = ?", username).First(&user).Error
@@ -35,7 +36,7 @@ func GetUserByUsername(username string) (models.User, error) {
 	return user, nil
 }
 
-func CheckPasswordOfUser(password string, userId int) error {
+func CheckPasswordOfUser(password string, userId uint) error {
 
 	user, err := GetUserByID(userId)
 	if err != nil {
@@ -50,17 +51,18 @@ func CheckPasswordOfUser(password string, userId int) error {
 
 func CreateUser(user models.User) error {
 
-	if validatedUser, err := GetUserByID(user.ID); err != nil {
+	if _, err := GetUserByUsername(user.Username); err != nil {
+
 		// if not, create user
-		password, err := bcrypt.GenerateFromPassword([]byte(validatedUser.Password), bcrypt.DefaultCost)
+		password, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 		if err != nil {
 			return err
 		}
 		tempUser := models.User{
-			Username:   validatedUser.Username,
+			Username:   user.Username,
 			Password:   string(password),
-			Name:       validatedUser.Name,
-			Avatar_URL: validatedUser.Avatar_URL,
+			Name:       user.Name,
+			Avatar_URL: user.Avatar_URL,
 		}
 		if err = database.DBConn.Create(&tempUser).Error; err != nil {
 			return err
@@ -80,16 +82,22 @@ func UpdateUser(user models.User) error {
 		return err
 	}
 	tempUser := models.User{
-		ID:         user.ID,
 		Username:   user.Username,
 		Password:   string(password),
 		Name:       user.Name,
 		Avatar_URL: user.Avatar_URL,
 	}
 
-	if err := database.DBConn.Save(&tempUser).Error; err != nil {
+	var currentUser models.User
+	err = database.DBConn.Where("username = ?", user.Username).First(&currentUser).Error
+	if err != nil {
 		return err
 	}
+	tempUser.ID = currentUser.ID
+	if err = database.DBConn.Save(&tempUser).Error; err != nil {
+		return err
+	}
+
 	return nil
 }
 

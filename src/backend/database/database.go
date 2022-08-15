@@ -1,6 +1,8 @@
 package database
 
 import (
+	"fmt"
+
 	"github.com/natrongmbh/kubetrial/models"
 	"gorm.io/driver/postgres"
 	_ "gorm.io/driver/postgres"
@@ -19,13 +21,17 @@ var (
 func InitDB() error {
 	var err error
 
-	dbUri := "host=" + DB_HOST + " port=" + DB_PORT + " user=" + DB_USERNAME + " dbname=" + DB_NAME + " password=" + DB_PASSWORD + " sslmode=disable"
+	dbUri := fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s sslmode=disable", DB_HOST, DB_PORT, DB_USERNAME, DB_NAME, DB_PASSWORD)
+	if err != nil {
+		return err
+	}
 	DBConn, err = gorm.Open(postgres.Open(dbUri), &gorm.Config{})
 	if err != nil {
 		return err
 	}
 
 	// migrate the schema
-	DBConn.AutoMigrate(&models.User{})
+	DBConn.Debug().AutoMigrate(&models.User{})
+	DBConn.Debug().AutoMigrate(&models.App{})
 	return nil
 }
