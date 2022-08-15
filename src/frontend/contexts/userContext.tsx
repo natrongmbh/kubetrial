@@ -64,9 +64,9 @@ export const UserContextProvider = ({ children }: Props) => {
                 console.log("Logged in as " + user.username);
             }
         }
-        Cookies.set('token', data["token"], { secure: true });
+        Cookies.set('token', data["token"], { secure: true, expires: 1 });
         if (remember) {
-            Cookies.set('username', username, { secure: true });
+            Cookies.set('username', username, { secure: true, expires: 31 });
         }
         DefaultAlert("Logged in", AlertType.Success);
     }
