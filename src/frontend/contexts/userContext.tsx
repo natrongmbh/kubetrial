@@ -25,6 +25,7 @@ export const UserContextProvider = ({ children }: Props) => {
     const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [reload, setReload] = useState(false);
     const router = useRouter();
 
     useEffect(() => {
@@ -88,6 +89,8 @@ export const UserContextProvider = ({ children }: Props) => {
         user,
         loading,
         error,
+        reload,
+        setReload,
         loginUser,
         logoutUser
     };

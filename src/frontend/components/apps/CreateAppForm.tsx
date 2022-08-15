@@ -2,6 +2,7 @@ import { ArchiveIcon, BookmarkAltIcon, KeyIcon, LinkIcon, PlusIcon, TagIcon, Tra
 import { useState } from "react";
 import Swal from "sweetalert2";
 import Api from "../../config/Api";
+import { useUserContext } from "../../contexts/userContext";
 import { GithubIcon, GitIcon } from "../../lib/Icons";
 import { AlertType, DefaultAlert, DefaultAlertMessage } from "../alerts/Alerts";
 import Button, { ButtonType } from "../general/Button";
@@ -18,6 +19,8 @@ const CreateAppForm = ({ setIsOpen }: any) => {
 
     // map of HelmPatchValue
     const [helmPatchValues, setHelmPatchValues] = useState<HelmPatchValue[]>([]);
+
+    const { reload, setReload }: any = useUserContext();
 
     const [valueName, setValueName] = useState("");
     const [valueString, setValueString] = useState("");
@@ -50,10 +53,11 @@ const CreateAppForm = ({ setIsOpen }: any) => {
         Api.post("/apps", updatedApp)
             .then(() => {
                 DefaultAlert("App created", AlertType.Success);
+                setReload(!reload)
                 setIsOpen(false);
             }).catch(() => {
                 DefaultAlert("Error creating app", AlertType.Error);
-            }); 
+            });
     }
 
     const handleAddValue = (e: any) => {

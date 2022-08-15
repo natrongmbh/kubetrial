@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import Api from '../../config/Api';
+import { useUserContext } from '../../contexts/userContext';
 import AppListItem from './AppListItem';
 import { HelmPatchValue } from './CreateAppForm';
 
@@ -21,6 +22,8 @@ export interface HelmChartPatchValue {
 const AppsList = () => {
 
     const [apps, setApps] = useState<App[]>([]);
+
+    const { reload }: any = useUserContext();
     
     useEffect(() => {
         (
@@ -35,7 +38,7 @@ const AppsList = () => {
                 }
             }
         )()
-    }, []);
+    }, [reload]);
 
     return (
         <div className="bg-white shadow overflow-hidden sm:rounded-md">

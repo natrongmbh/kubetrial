@@ -2,6 +2,7 @@ import { ArchiveIcon, BookmarkAltIcon, KeyIcon, LinkIcon, PlusIcon, TagIcon, Tra
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import Api from "../../config/Api";
+import { useUserContext } from "../../contexts/userContext";
 import { GithubIcon, GitIcon } from "../../lib/Icons";
 import { AlertType, DefaultAlert, DefaultAlertMessage } from "../alerts/Alerts";
 import Button, { ButtonType } from "../general/Button";
@@ -41,6 +42,8 @@ const EditAppForm = ({ app, setIsOpen }: any) => {
         return helmPatchValueA.name.localeCompare(helmPatchValueB.name)
     })
 
+    const { reload, setReload }: any = useUserContext();
+
     const [helmPatchValues, setHelmPatchValues] = useState(safeHelmPatchValues);
 
     const [valueName, setValueName] = useState("");
@@ -72,6 +75,7 @@ const EditAppForm = ({ app, setIsOpen }: any) => {
             Api.put(`/apps/${appData.ID}`, updatedApp)
                 .then(() => {
                     DefaultAlert("App updated successfully", AlertType.Success)
+                    setReload(!reload)
                     setIsOpen(false)
                 }).catch(() => {
                     DefaultAlert("Error updating app", AlertType.Error)
@@ -116,6 +120,7 @@ const EditAppForm = ({ app, setIsOpen }: any) => {
                 Api.delete(`/apps/${appData.ID}`)
                     .then(() => {
                         DefaultAlert("App deleted successfully", AlertType.Success)
+                        setReload(!reload)
                         setIsOpen(false)
                     }).catch(() => {
                         DefaultAlert("Error deleting app", AlertType.Error)
