@@ -5,6 +5,7 @@ import { classNames } from "../../lib/design"
 const Modal = ({ children, title, isOpen, setIsOpen }: any) => {
 
     const [open, setOpen] = useState(false)
+    
 
     useEffect(() => {
         setOpen(isOpen)
@@ -21,7 +22,7 @@ const Modal = ({ children, title, isOpen, setIsOpen }: any) => {
             }}
         >
             <div
-                className="bg-white w-4/5 sm:h-3/5 h-4/5 rounded-lg absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+                className="bg-white sm:px-10 sm:h-3/5 w-4/5 max-h-4/5 rounded-lg absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
                 onClick={(e) => {
                     e.stopPropagation();
                 }}

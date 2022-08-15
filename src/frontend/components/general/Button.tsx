@@ -6,6 +6,8 @@ export enum ButtonType {
     Secondary = "secondary",
     PrimaryOutline = "primaryOutline",
     SecondaryOutline = "secondaryOutline",
+    Delete = "delete",
+    Disabled = "disabled",
 }
 
 export default function Button({ widthString, inline, buttonType, buttonText, buttonIcon, onClick }: { widthString?: any | "", inline?: any, buttonType: ButtonType, buttonText: string, buttonIcon?: any, onClick?: (e: any) => void }) {
@@ -125,6 +127,38 @@ export default function Button({ widthString, inline, buttonType, buttonText, bu
                         hoverAnimationClasses,
                         defaultStyleClasses,
                         "outline outline-4 outline-inherit box-border text-white bg-primary"
+                    )}
+                    onClick={onClick}
+                >
+                    <span
+                        className={classNames(
+                            "bg-white",
+                            buttonBackgroundHover
+                        )}
+
+                    ></span>
+                    <div
+                        className={classNames(
+                            buttonIcon ? "" : "hidden",
+                            "absolute top-1/2 left-2 w-8"
+                        )}
+                    >
+                        <div
+                            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+                        >
+                            {buttonIcon}
+                        </div>
+                    </div>
+                    {buttonText}
+                </button>
+            )
+        case ButtonType.Delete:
+            return (
+                <button
+                    className={classNames(
+                        hoverAnimationClasses,
+                        defaultStyleClasses,
+                        "relative bg-red-500 text-white"
                     )}
                     onClick={onClick}
                 >
