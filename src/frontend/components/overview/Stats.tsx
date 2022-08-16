@@ -1,20 +1,94 @@
 import { ArrowSmDownIcon, ArrowSmUpIcon, BeakerIcon, CodeIcon } from '@heroicons/react/solid'
 import { CursorClickIcon, MailOpenIcon, UsersIcon } from '@heroicons/react/outline'
 import { classNames } from '../../lib/design'
+import { useEffect, useState } from 'react'
+import { useUserContext } from '../../contexts/userContext'
+import Api from '../../config/Api'
 
 const stats = [
-    { id: 1, name: 'Total Trials', stat: '71', icon: BeakerIcon, change: '10', changeType: 'increase' },
+    {
+        id: 1,
+        name: 'Total Trials',
+        stat: '71',
+        icon: BeakerIcon,
+        change: '10',
+        changeType: 'increase'
+    },
     { id: 2, name: 'Total Apps', stat: '2', icon: CodeIcon, change: '1', changeType: 'increase' },
     { id: 3, name: 'Total Sold', stat: '20', icon: CursorClickIcon, change: '2', changeType: 'increase' },
 ]
 
+export interface Stat {
+    total_app_count: number;
+    app_count_last_30_days: number;
+    total_trial_count: number;
+    trial_count_last_30_days: number;
+}
+
+export interface Stats {
+    id: number;
+    name: string;
+    stat: string;
+    icon: any;
+    change: string;
+    changeType: ChangeType;
+}
+
+enum ChangeType {
+    Increase = 'increase',
+    Decrease = 'decrease'
+}
+
 const Stats = () => {
+
+    const [statsResponse, setStatsResponse] = useState<Stat>({ 
+        total_app_count: 0,
+        app_count_last_30_days: 0, 
+        total_trial_count: 0,
+        trial_count_last_30_days: 0 
+    })
+    const [stats, setStats] = useState<Stats[]>([])
+
+    const { reload }: any = useUserContext();
+
+    useEffect(() => {
+        (
+            async () => {
+                try {
+                    const { data } = await Api.get('/stats');
+                    if (data) {
+                        setStatsResponse(data);
+                        setStats([
+                            {
+                                id: 1,
+                                name: 'Total Trials',
+                                stat: data.total_trial_count.toString(),
+                                icon: BeakerIcon,
+                                change: (data.trial_count_last_30_days).toString(),
+                                changeType: data.trial_count_last_30_days > 0 ? ChangeType.Increase : ChangeType.Decrease
+                            },
+                            {
+                                id: 2,
+                                name: 'Total Apps',
+                                stat: data.total_app_count.toString(),
+                                icon: CodeIcon,
+                                change: (data.app_count_last_30_days).toString(),
+                                changeType: data.app_count_last_30_days > 0 ? ChangeType.Increase : ChangeType.Decrease
+                            },
+                        ])
+                    }
+                } catch (error) {
+                    console.log(error);
+                }
+            }
+        )()
+    }, [reload]);
 
     return (
         <div>
             <h3 className="text-lg leading-6 font-medium text-gray-900">Last 30 days</h3>
 
-            <dl className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            <dl className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-2">
                 {stats.map((item) => (
                     <div
                         key={item.id}

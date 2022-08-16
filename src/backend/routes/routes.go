@@ -15,6 +15,8 @@ func Setup(app *fiber.App) {
 	v1.Post("/auth", controllers.Login)
 	v1.Get("/auth", controllers.CheckLogin)
 
+	// Overview
+	v1.Get("/stats", controllers.GetStats)
 	v1.Get("/clusterinfo", controllers.GetClusterInfo)
 
 	// App
