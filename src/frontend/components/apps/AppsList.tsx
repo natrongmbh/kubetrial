@@ -18,8 +18,12 @@ export interface App {
 }
 
 export interface HelmChartPatchValue {
+    ID: number | undefined;
     name: string;
     value: string;
+    CreatedAt: string;
+    UpdatedAt: string;
+    DeletedAt: string;
 }
 
 const AppsList = () => {
@@ -35,7 +39,6 @@ const AppsList = () => {
                     const { data } = await Api.get('/apps');
                     if (data) {
                         setApps(data);
-                        console.log(data);
                     }
                 } catch (error) {
                     console.log(error);

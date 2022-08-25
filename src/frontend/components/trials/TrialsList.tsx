@@ -15,8 +15,12 @@ export interface Trial {
 }
 
 export interface TrialPatchValue {
-    value: string;
+    ID: number | undefined;
+    value: string | undefined;
     helm_chart_patch_value_id: number;
+    CreatedAt: string | undefined;
+    UpdatedAt: string | undefined;
+    DeletedAt: string | undefined;
 }
 
 const TrialsList = () => {
@@ -28,10 +32,9 @@ const TrialsList = () => {
         (
             async () => {
                 try {
-                    const { data } = await Api.get('/apps');
+                    const { data } = await Api.get('/trials');
                     if (data) {
                         setTrials(data);
-                        console.log(data);
                     }
                 } catch (error) {
                     console.log(error);
