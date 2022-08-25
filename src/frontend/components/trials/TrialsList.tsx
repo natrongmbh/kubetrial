@@ -1,40 +1,31 @@
-import { useEffect, useState } from 'react';
-import Api from '../../config/Api';
-import { useUserContext } from '../../contexts/userContext';
-import AppListItem from './AppListItem';
-import { HelmPatchValue } from './CreateAppForm';
+import { useEffect, useState } from "react";
+import Api from "../../config/Api";
+import { useUserContext } from "../../contexts/userContext";
+import { App } from "../apps/AppsList";
 
-export interface App {
+export interface Trial {
     ID: number | undefined;
+    app: App;
     name: string;
+    url: string;
     description: string;
-    helm_chart_repository_url: string;
-    helm_chart_name: string;
-    helm_chart_version: string;
-    helm_chart_patch_values: HelmPatchValue[];
     CreatedAt: string;
     UpdatedAt: string;
     DeletedAt: string;
 }
 
-export interface HelmChartPatchValue {
-    name: string;
-    value: string;
-}
-
-const AppsList = () => {
-
-    const [apps, setApps] = useState<App[]>([]);
+const TrialsList = () => {
+    const [trials, setTrials] = useState<Trial[]>([]);
 
     const { reload }: any = useUserContext();
-    
+
     useEffect(() => {
         (
             async () => {
                 try {
                     const { data } = await Api.get('/apps');
                     if (data) {
-                        setApps(data);
+                        setTrials(data);
                         console.log(data);
                     }
                 } catch (error) {
@@ -47,9 +38,9 @@ const AppsList = () => {
     return (
         <div className="bg-white shadow overflow-hidden sm:rounded-md">
             <ul role="list" className="divide-y divide-gray-200">
-                {apps.map((app: App) => (
-                    <li key={app.ID}>
-                        <AppListItem app={app} />
+                {trials.map((trial: Trial) => (
+                    <li key={trial.ID}>
+                        {/* <TrialListItem trial={trial} /> */}
                     </li>
                 ))}
             </ul>
@@ -57,4 +48,4 @@ const AppsList = () => {
     )
 }
 
-export default AppsList;
+export default TrialsList;

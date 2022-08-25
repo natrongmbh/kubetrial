@@ -48,6 +48,9 @@ const CreateAppForm = ({ setIsOpen }: any) => {
             helm_chart_name: appHelmChartName,
             helm_chart_version: appHelmChartVersion,
             helm_chart_patch_values: helmPatchValues,
+            CreatedAt: "",
+            UpdatedAt: "",
+            DeletedAt: ""
         }
 
         Api.post("/apps", updatedApp)
