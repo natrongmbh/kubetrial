@@ -5,13 +5,18 @@ import { App } from "../apps/AppsList";
 
 export interface Trial {
     ID: number | undefined;
-    app: App;
     name: string;
-    url: string;
     description: string;
+    app: App;
+    trial_patch_values: TrialPatchValue[];
     CreatedAt: string;
     UpdatedAt: string;
     DeletedAt: string;
+}
+
+export interface TrialPatchValue {
+    value: string;
+    helm_chart_patch_value_id: number;
 }
 
 const TrialsList = () => {
