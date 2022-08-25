@@ -1,4 +1,4 @@
-import { ArrowSmDownIcon, ArrowSmUpIcon, BeakerIcon, CodeIcon } from '@heroicons/react/solid'
+import { ArrowSmDownIcon, ArrowSmRightIcon, ArrowSmUpIcon, BeakerIcon, CodeIcon } from '@heroicons/react/solid'
 import { CursorClickIcon, MailOpenIcon, UsersIcon } from '@heroicons/react/outline'
 import { classNames } from '../../lib/design'
 import { useEffect, useState } from 'react'
@@ -36,7 +36,8 @@ export interface Stats {
 
 enum ChangeType {
     Increase = 'increase',
-    Decrease = 'decrease'
+    Decrease = 'decrease',
+    None = 'none'
 }
 
 const Stats = () => {
@@ -65,7 +66,7 @@ const Stats = () => {
                                 stat: data.total_trial_count.toString(),
                                 icon: BeakerIcon,
                                 change: (data.trial_count_last_30_days).toString(),
-                                changeType: data.trial_count_last_30_days > 0 ? ChangeType.Increase : ChangeType.Decrease
+                                changeType: data.trial_count_last_30_days === 0 ? ChangeType.None : data.trial_count_last_30_days > 0 ? ChangeType.Increase : ChangeType.Decrease
                             },
                             {
                                 id: 2,
@@ -73,7 +74,7 @@ const Stats = () => {
                                 stat: data.total_app_count.toString(),
                                 icon: CodeIcon,
                                 change: (data.app_count_last_30_days).toString(),
-                                changeType: data.app_count_last_30_days > 0 ? ChangeType.Increase : ChangeType.Decrease
+                                changeType: data.app_count_last_30_days === 0 ? ChangeType.None : data.app_count_last_30_days > 0 ? ChangeType.Increase : ChangeType.Decrease
                             },
                         ])
                     }
@@ -104,15 +105,20 @@ const Stats = () => {
                             <p className="text-2xl font-semibold text-gray-900">{item.stat}</p>
                             <p
                                 className={classNames(
-                                    item.changeType === 'increase' ? 'text-green-600' : 'text-red-600',
+                                    item.changeType === 'increase' ? 'text-green-600' : item.changeType === 'decrease' ? 'text-red-600' : 'text-gray-500',
                                     'ml-2 flex items-baseline text-sm font-semibold'
                                 )}
                             >
                                 {item.changeType === 'increase' ? (
                                     <ArrowSmUpIcon className="self-center flex-shrink-0 h-5 w-5 text-green-500" aria-hidden="true" />
-                                ) : (
+                                ) : 
+                                item.changeType === 'decrease' ?
+                                (
                                     <ArrowSmDownIcon className="self-center flex-shrink-0 h-5 w-5 text-red-500" aria-hidden="true" />
-                                )}
+                                ): (
+                                    <ArrowSmRightIcon className="self-center flex-shrink-0 h-5 w-5 text-gray-500" aria-hidden="true" />
+                                )    
+                                }
 
                                 <span className="sr-only">{item.changeType === 'increase' ? 'Increased' : 'Decreased'} by</span>
                                 {item.change}

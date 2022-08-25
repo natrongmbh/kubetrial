@@ -11,7 +11,7 @@
   "dependencies": {
     "@beam-australia/react-env": "^3.1.1",
     "@headlessui/react": "^1.6.4",
-    "@heroicons/react": "^1.0.6",
+    "@heroicons/react": "v1",
     "@tailwindcss/forms": "^0.5.2",
     "axios": "^0.27.2",
     "hamburger-react": "^2.5.0",
