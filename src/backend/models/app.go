@@ -14,7 +14,7 @@ type App struct {
 
 type HelmChartPatchValue struct {
 	gorm.Model
-	Name  string `json:"name"`
-	Value string `json:"value"`
-	AppID uint
+	Name        string `json:"name"`
+	ValueString string `json:"value_string"`
+	AppID       uint
 }

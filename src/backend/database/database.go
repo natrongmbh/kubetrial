@@ -34,5 +34,7 @@ func InitDB() error {
 	DBConn.Debug().AutoMigrate(&models.User{})
 	DBConn.Debug().AutoMigrate(&models.App{})
 	DBConn.Debug().AutoMigrate(&models.HelmChartPatchValue{})
+	DBConn.Debug().AutoMigrate(&models.Trial{})
+	DBConn.Debug().AutoMigrate(&models.TrialPatchValue{})
 	return nil
 }

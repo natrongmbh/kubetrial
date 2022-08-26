@@ -25,4 +25,12 @@ func Setup(app *fiber.App) {
 	v1.Post("/apps", controllers.CreateApp)
 	v1.Put("/apps/:id", controllers.UpdateApp)
 	v1.Delete("/apps/:id", controllers.DeleteApp)
+
+	// Trial
+	v1.Get("/trials", controllers.GetTrials)
+	v1.Get("/trials/:id", controllers.GetTrial)
+	v1.Post("/trials", controllers.CreateTrial)
+	v1.Put("/trials/:id", controllers.UpdateTrial)
+	v1.Delete("/trials/:id", controllers.DeleteTrial)
+
 }

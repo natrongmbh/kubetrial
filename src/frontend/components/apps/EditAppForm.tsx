@@ -27,6 +27,9 @@ const EditAppForm = ({ app, setIsOpen }: any) => {
             helm_chart_name: "",
             helm_chart_version: "",
             helm_chart_patch_values: [],
+            CreatedAt: "",
+            UpdatedAt: "",
+            DeletedAt: ""
         }
     }
 
@@ -34,7 +37,7 @@ const EditAppForm = ({ app, setIsOpen }: any) => {
     const safeHelmPatchValues: Array<HelmPatchValue> = Array.from(appData.helm_chart_patch_values).map((helmPatchValue: HelmPatchValue) => {
         return {
             name: helmPatchValue.name,
-            value: helmPatchValue.value,
+            value_string: helmPatchValue.value_string,
         }
     }).filter((helmPatchValue: HelmPatchValue) => {
         return helmPatchValue.name !== "" && helmPatchValue.value !== ""
@@ -70,6 +73,9 @@ const EditAppForm = ({ app, setIsOpen }: any) => {
                 helm_chart_name: appHelmChartName,
                 helm_chart_version: appHelmChartVersion,
                 helm_chart_patch_values: helmPatchValues,
+                CreatedAt: appData.CreatedAt,
+                UpdatedAt: appData.UpdatedAt,
+                DeletedAt: appData.DeletedAt,
             }
 
             Api.put(`/apps/${appData.ID}`, updatedApp)
@@ -92,7 +98,7 @@ const EditAppForm = ({ app, setIsOpen }: any) => {
                     return;
                 }
             }
-            setHelmPatchValues([...helmPatchValues, { name: valueName, value: valueString }]);
+            setHelmPatchValues([...helmPatchValues, { name: valueName, value_string: valueString }]);
 
 
             setValueName("");
@@ -249,7 +255,7 @@ const EditAppForm = ({ app, setIsOpen }: any) => {
                                         <span
                                             className="font-GilroyLight"
                                         >
-                                            {helmPatchValues[index] && helmPatchValues[index].value}
+                                            {helmPatchValues[index] && helmPatchValues[index].value_string}
                                         </span>
                                     </div>
                                     <div

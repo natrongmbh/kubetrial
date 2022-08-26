@@ -71,7 +71,7 @@ const CreateAppForm = ({ setIsOpen }: any) => {
                     return;
                 }
             }
-            setHelmPatchValues([...helmPatchValues, { name: valueName, value: valueString }]);
+            setHelmPatchValues([...helmPatchValues, { name: valueName, value_string: valueString }]);
 
 
             setValueName("");
@@ -198,7 +198,7 @@ const CreateAppForm = ({ setIsOpen }: any) => {
                                         <span
                                             className="font-GilroyLight"
                                         >
-                                            {helmPatchValues[index] && helmPatchValues[index].value}
+                                            {helmPatchValues[index] && helmPatchValues[index].value_string}
                                         </span>
                                     </div>
                                     <div

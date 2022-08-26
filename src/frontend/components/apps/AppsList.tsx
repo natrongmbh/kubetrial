@@ -20,7 +20,7 @@ export interface App {
 export interface HelmChartPatchValue {
     ID: number | undefined;
     name: string;
-    value: string;
+    value_string: string;
     CreatedAt: string;
     UpdatedAt: string;
     DeletedAt: string;

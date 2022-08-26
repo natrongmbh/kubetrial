@@ -28,8 +28,8 @@ func CreateApp(c *fiber.Ctx) error {
 
 	for _, v := range body["helm_chart_patch_values"].([]interface{}) {
 		helmChartPatchValues = append(helmChartPatchValues, models.HelmChartPatchValue{
-			Name:  v.(map[string]interface{})["name"].(string),
-			Value: v.(map[string]interface{})["value"].(string),
+			Name:        v.(map[string]interface{})["name"].(string),
+			ValueString: v.(map[string]interface{})["value_string"].(string),
 		})
 	}
 
@@ -93,6 +93,7 @@ func GetApp(c *fiber.Ctx) error {
 }
 
 func UpdateApp(c *fiber.Ctx) error {
+	//TODO fix creating new helm chart patch values when updating app
 
 	user, err := CheckAuth(c)
 	if user.ID == 0 || err != nil {
@@ -126,8 +127,8 @@ func UpdateApp(c *fiber.Ctx) error {
 
 	for _, v := range body["helm_chart_patch_values"].([]interface{}) {
 		helmChartPatchValues = append(helmChartPatchValues, models.HelmChartPatchValue{
-			Name:  v.(map[string]interface{})["name"].(string),
-			Value: v.(map[string]interface{})["value"].(string),
+			Name:        v.(map[string]interface{})["name"].(string),
+			ValueString: v.(map[string]interface{})["value_string"].(string),
 		})
 	}
 
