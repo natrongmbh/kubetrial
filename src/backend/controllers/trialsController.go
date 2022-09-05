@@ -1,8 +1,6 @@
 package controllers
 
 import (
-	"fmt"
-
 	"github.com/gofiber/fiber/v2"
 	"github.com/natrongmbh/kubetrial/database"
 	"github.com/natrongmbh/kubetrial/helm"
@@ -77,7 +75,14 @@ func CreateTrial(c *fiber.Ctx) error {
 		})
 	}
 
-	fmt.Println(helm.ValuesYamlParser(trialPatchValues, helmChartPatchValues))
+	trialValues := helm.ValuesYamlParser(trialPatchValues, helmChartPatchValues)
+
+	mergedValues, err := helm.MergeDefaultYamlWithTrialYaml(app.DefaultHelmChartPatchValues, trialValues)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": "Error merging default values with trial values",
+		})
+	}
 
 	// create helm release
 	release, err := helm.CreateOrUpdateHelmRelease(
@@ -86,7 +91,7 @@ func CreateTrial(c *fiber.Ctx) error {
 		app.HelmChartName,
 		helm.GetNamespaceName(trial.Name),
 		app.HelmChartVersion,
-		helm.ValuesYamlParser(trialPatchValues, helmChartPatchValues),
+		mergedValues,
 	)
 
 	if err != nil && release == nil {
@@ -96,17 +101,35 @@ func CreateTrial(c *fiber.Ctx) error {
 		})
 	}
 
-	if err := database.DBConn.Create(&trial).Error; err != nil {
-		// delete helm release
-		// if err := helm.DeleteHelmRelease(*helmClient, app.HelmChartName, helm.GetNamespaceName(trial.Name)); err != nil {
-		// 	return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-		// 		"message": "Error deleting helm release",
-		// 	})
-		// }
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"message": "Error creating trial",
-			"error":   err.Error(),
-		})
+	// check if trial already exists in database and update it
+	if err := database.DBConn.Where("name = ?", trial.Name).First(&trial).Error; err == nil {
+		// delete trial patch values
+		if err := database.DBConn.Where("trial_id = ?", trial.ID).Delete(&models.TrialPatchValue{}).Error; err != nil {
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"message": "Error deleting trial patch values",
+			})
+		}
+
+		// update trial
+		if err := database.DBConn.Model(&trial).Updates(trial).Error; err != nil {
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"message": "Error updating trial",
+			})
+		}
+	} else {
+		// create trial
+		if err := database.DBConn.Create(&trial).Error; err != nil {
+			// delete helm release
+			// if err := helm.DeleteHelmRelease(*helmClient, app.HelmChartName, helm.GetNamespaceName(trial.Name)); err != nil {
+			// 	return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			// 		"message": "Error deleting helm release",
+			// 	})
+			// }
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"message": "Error creating trial",
+				"error":   err.Error(),
+			})
+		}
 	}
 
 	return c.Status(fiber.StatusCreated).JSON(release)

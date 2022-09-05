@@ -5,9 +5,11 @@ import (
 	"strings"
 	"time"
 
+	"github.com/imdario/mergo"
 	helmclient "github.com/mittwald/go-helm-client"
 	"github.com/natrongmbh/kubetrial/models"
 	"github.com/natrongmbh/kubetrial/util"
+	"gopkg.in/yaml.v2"
 	"helm.sh/helm/v3/pkg/release"
 	"helm.sh/helm/v3/pkg/repo"
 )
@@ -96,4 +98,32 @@ func ValuesYamlParser(trialPatchValues []models.TrialPatchValue, helmChartPatchV
 		}
 	}
 	return valuesYaml
+}
+
+func MergeDefaultYamlWithTrialYaml(defaultYaml string, trialYaml string) (string, error) {
+
+	// add defaultYaml to trialYaml
+	// if trialYaml has the same key as defaultYaml, then trialYaml will overwrite defaultYaml
+
+	var defaultYamlMap map[string]interface{}
+	var trialYamlMap map[string]interface{}
+
+	if err := yaml.Unmarshal([]byte(defaultYaml), &defaultYamlMap); err != nil {
+		return "", err
+	}
+
+	if err := yaml.Unmarshal([]byte(trialYaml), &trialYamlMap); err != nil {
+		return "", err
+	}
+
+	if err := mergo.Merge(&defaultYamlMap, trialYamlMap); err != nil {
+		return "", err
+	}
+
+	mergedYaml, err := yaml.Marshal(defaultYamlMap)
+	if err != nil {
+		return "", err
+	}
+
+	return string(mergedYaml), nil
 }
