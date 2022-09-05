@@ -10,12 +10,12 @@ import (
 
 func CreateTrial(c *fiber.Ctx) error {
 
-	// user, err := CheckAuth(c)
-	// if user.ID == 0 || err != nil {
-	// 	return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-	// 		"message": "Unauthorized",
-	// 	})
-	// }
+	user, err := CheckAuth(c)
+	if user.ID == 0 || err != nil {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+			"message": "Unauthorized",
+		})
+	}
 
 	// get request body as JSON
 	var body fiber.Map
@@ -139,12 +139,12 @@ func CreateTrial(c *fiber.Ctx) error {
 
 func GetTrials(c *fiber.Ctx) error {
 
-	// user, err := CheckAuth(c)
-	// if user.ID == 0 || err != nil {
-	// 	return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-	// 		"message": "Unauthorized",
-	// 	})
-	// }
+	user, err := CheckAuth(c)
+	if user.ID == 0 || err != nil {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+			"message": "Unauthorized",
+		})
+	}
 
 	// get trials from database with app and trial patch values
 	trials := []models.Trial{}
@@ -197,12 +197,12 @@ func UpdateTrial(c *fiber.Ctx) error {
 }
 
 func DeleteTrial(c *fiber.Ctx) error {
-	// user, err := CheckAuth(c)
-	// if user.ID == 0 || err != nil {
-	// 	return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-	// 		"message": "Unauthorized",
-	// 	})
-	// }
+	user, err := CheckAuth(c)
+	if user.ID == 0 || err != nil {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+			"message": "Unauthorized",
+		})
+	}
 
 	// delete trial and trial patch values from database
 	trial := models.Trial{}
