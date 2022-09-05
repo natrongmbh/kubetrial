@@ -26,7 +26,7 @@ func CreateApp(c *fiber.Ctx) error {
 	//parse body["helm_chart_patch_values"] as JSON
 	var helmChartPatchValues []models.HelmChartPatchValue
 
-	for _, v := range body["helm_chart_patch_value"].([]interface{}) {
+	for _, v := range body["helm_chart_patch_values"].([]interface{}) {
 		helmChartPatchValues = append(helmChartPatchValues, models.HelmChartPatchValue{
 			Name:        v.(map[string]interface{})["name"].(string),
 			ValueString: v.(map[string]interface{})["value_string"].(string),

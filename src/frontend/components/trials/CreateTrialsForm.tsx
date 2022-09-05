@@ -99,7 +99,7 @@ const CreateTrialsForm = ({ setIsOpen }: any) => {
 
             {
                 selectedApp ? (
-                    <CreateTrialsFormValues app={selectedApp} />
+                    <CreateTrialsFormValues app={selectedApp} setIsOpen={setIsOpen} />
                 ) : null
             }
         </div>

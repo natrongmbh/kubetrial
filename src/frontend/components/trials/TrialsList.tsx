@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import Api from "../../config/Api";
 import { useUserContext } from "../../contexts/userContext";
 import { App } from "../apps/AppsList";
+import TrialListItem from "./TrialListItem";
 
 export interface Trial {
     ID: number | undefined;
@@ -9,6 +10,7 @@ export interface Trial {
     description: string;
     app: App;
     trial_patch_values: TrialPatchValue[];
+    bg_color: string;
     CreatedAt: string;
     UpdatedAt: string;
     DeletedAt: string;
@@ -44,11 +46,12 @@ const TrialsList = () => {
     }, [reload]);
 
     return (
-        <div className="bg-white shadow overflow-hidden sm:rounded-md">
-            <ul role="list" className="divide-y divide-gray-200">
+        <div>
+            <h2 className="text-sm font-medium text-gray-500">Active Trials ({trials.length})</h2>
+            <ul role="list" className="mt-3 flex sm:flex-wrap sm:flex-row flex-col  gap-4">
                 {trials.map((trial: Trial) => (
-                    <li key={trial.ID}>
-                        {/* <TrialListItem trial={trial} /> */}
+                    <li key={trial.ID} className="col-span-1 flex rounded-md shadow-sm">
+                        <TrialListItem trial={trial} />
                     </li>
                 ))}
             </ul>

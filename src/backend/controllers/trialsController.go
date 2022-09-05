@@ -37,6 +37,7 @@ func CreateTrial(c *fiber.Ctx) error {
 		Name:             body["name"].(string),
 		Description:      body["description"].(string),
 		AppID:            uint(body["app_id"].(float64)),
+		BgColor:          body["bg_color"].(string),
 		TrialPatchValues: trialPatchValues,
 	}
 
@@ -136,9 +137,29 @@ func CreateTrial(c *fiber.Ctx) error {
 }
 
 func GetTrials(c *fiber.Ctx) error {
-	return c.Status(fiber.StatusNotImplemented).JSON(fiber.Map{
-		"message": "Not implemented",
-	})
+
+	// user, err := CheckAuth(c)
+	// if user.ID == 0 || err != nil {
+	// 	return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+	// 		"message": "Unauthorized",
+	// 	})
+	// }
+
+	// get trials from database with app and trial patch values
+	trials := []models.Trial{}
+	if err := database.DBConn.Preload("App").Preload("TrialPatchValues").Find(&trials).Error; err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": "Error getting trials",
+		})
+	}
+
+	// sort trials by app
+	trialsByApp := map[string][]models.Trial{}
+	for _, trial := range trials {
+		trialsByApp[trial.App.Name] = append(trialsByApp[trial.App.Name], trial)
+	}
+
+	return c.Status(fiber.StatusOK).JSON(trials)
 }
 
 func GetTrial(c *fiber.Ctx) error {
