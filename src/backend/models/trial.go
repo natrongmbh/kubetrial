@@ -10,6 +10,7 @@ type Trial struct {
 	App              App               `json:"app"`
 	TrialPatchValues []TrialPatchValue `json:"trial_patch_values"`
 	BgColor          string            `json:"bg_color"`
+	Status           string            `json:"status"`
 }
 
 type TrialPatchValue struct {

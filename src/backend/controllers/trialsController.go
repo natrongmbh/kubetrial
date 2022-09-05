@@ -4,6 +4,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/natrongmbh/kubetrial/database"
 	"github.com/natrongmbh/kubetrial/helm"
+	"github.com/natrongmbh/kubetrial/k8s"
 	"github.com/natrongmbh/kubetrial/models"
 )
 
@@ -70,7 +71,7 @@ func CreateTrial(c *fiber.Ctx) error {
 	}
 
 	// create helm repository
-	if err := helm.AddHelmRepositoryToClient(*helmClient, app.Name, app.HelmChartRepositoryUrl); err != nil {
+	if err := helm.AddHelmRepositoryToClient(helmClient, app.Name, app.HelmChartRepositoryUrl); err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"message": "Error adding helm repository",
 		})
@@ -87,7 +88,7 @@ func CreateTrial(c *fiber.Ctx) error {
 
 	// create helm release
 	release, err := helm.CreateOrUpdateHelmRelease(
-		*helmClient,
+		helmClient,
 		app.Name+"/"+app.HelmChartName,
 		app.HelmChartName,
 		helm.GetNamespaceName(trial.Name),
@@ -153,6 +154,27 @@ func GetTrials(c *fiber.Ctx) error {
 		})
 	}
 
+	// get the release status for each trial
+	for i, trial := range trials {
+		// create helm client
+		helmClient, err := helm.CreateHelmClient(helm.GetNamespaceName(trial.Name))
+		if err != nil {
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"message": "Error creating helm client",
+			})
+		}
+
+		// get helm release
+		release, err := helm.GetHelmRelease(helmClient, trial.App.HelmChartName)
+		if err != nil {
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"message": "Error getting helm release",
+			})
+		}
+
+		trials[i].Status = release.Info.Status.String()
+	}
+
 	// sort trials by app
 	trialsByApp := map[string][]models.Trial{}
 	for _, trial := range trials {
@@ -175,7 +197,42 @@ func UpdateTrial(c *fiber.Ctx) error {
 }
 
 func DeleteTrial(c *fiber.Ctx) error {
-	return c.Status(fiber.StatusNotImplemented).JSON(fiber.Map{
-		"message": "Not implemented",
+	// user, err := CheckAuth(c)
+	// if user.ID == 0 || err != nil {
+	// 	return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+	// 		"message": "Unauthorized",
+	// 	})
+	// }
+
+	// delete trial and trial patch values from database
+	trial := models.Trial{}
+	// by id
+	if err := database.DBConn.Where("id = ?", c.Params("id")).First(&trial).Error; err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": "Error getting trial",
+		})
+	}
+
+	if err := database.DBConn.Where("trial_id = ?", trial.ID).Delete(&models.TrialPatchValue{}).Error; err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": "Error deleting trial patch values",
+		})
+	}
+
+	if err := database.DBConn.Delete(&trial).Error; err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": "Error deleting trial",
+		})
+	}
+
+	// delete namespace
+	if err := k8s.DeleteNamespace(helm.GetNamespaceName(trial.Name)); err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": "Error deleting namespace",
+		})
+	}
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"message": "Trial deleted",
 	})
 }

@@ -11,6 +11,7 @@ export interface Trial {
     app: App;
     trial_patch_values: TrialPatchValue[];
     bg_color: string;
+    status: string | undefined;
     CreatedAt: string;
     UpdatedAt: string;
     DeletedAt: string;
@@ -46,11 +47,11 @@ const TrialsList = () => {
     }, [reload]);
 
     return (
-        <div>
+        <div className="px-2">
             <h2 className="text-sm font-medium text-gray-500">Active Trials ({trials.length})</h2>
-            <ul role="list" className="mt-3 flex sm:flex-wrap sm:flex-row flex-col  gap-4">
+            <ul role="list" className="mt-3 flex sm:flex-wrap sm:flex-row flex-col gap-4">
                 {trials.map((trial: Trial) => (
-                    <li key={trial.ID} className="col-span-1 flex rounded-md shadow-sm">
+                    <li key={trial.ID} className="col-span-1 flex rounded-md shadow-lg">
                         <TrialListItem trial={trial} />
                     </li>
                 ))}

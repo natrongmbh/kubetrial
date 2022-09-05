@@ -1,6 +1,6 @@
 import { Fragment } from 'react'
 import { Disclosure, Menu, Transition } from '@headlessui/react'
-import { BeakerIcon, BellIcon, CodeIcon, DesktopComputerIcon, MenuIcon, StarIcon, TemplateIcon, XIcon } from '@heroicons/react/outline'
+import { BeakerIcon, BellIcon, CodeIcon, DesktopComputerIcon, MenuIcon, StarIcon, TemplateIcon, UserIcon, XIcon } from '@heroicons/react/outline'
 import { PlusSmIcon } from '@heroicons/react/solid'
 import { classNames } from '../lib/design'
 import { useUserContext } from '../contexts/userContext'
@@ -97,9 +97,9 @@ export default function Navbar() {
                                     {/* Profile dropdown */}
                                     <Menu as="div" className="ml-3 relative">
                                         <div>
-                                            <Menu.Button className="bg-gray-800 flex text-sm rounded-full ">
+                                            <Menu.Button className=" flex text-sm rounded-full ">
                                                 <span className="sr-only">Open user menu</span>
-                                                <img className="h-8 w-8 rounded-full" src={user.avatar_url} alt="" />
+                                                <UserIcon className="h-6 w-6" aria-hidden="true" />
                                             </Menu.Button>
                                         </div>
                                         <Transition

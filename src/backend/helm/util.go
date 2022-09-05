@@ -22,14 +22,12 @@ func GetNamespaceName(trialName string) string {
 	return Prefix + "-" + util.StringParser(trialName)
 }
 
-func CreateHelmClient(namespace string) (*helmclient.Client, error) {
+func CreateHelmClient(namespace string) (helmclient.Client, error) {
 	opt := &helmclient.Options{
-		Namespace:        namespace,
-		RepositoryConfig: "/tmp/.helmrepo-" + namespace,
-		RepositoryCache:  "/tmp/.helmcache-" + namespace,
-		Debug:            true,
-		Linting:          true,
-		DebugLog:         func(format string, v ...interface{}) {},
+		Namespace: namespace,
+		Debug:     true,
+		Linting:   true,
+		DebugLog:  func(format string, v ...interface{}) {},
 	}
 
 	helmClient, err := helmclient.New(opt)
@@ -37,7 +35,7 @@ func CreateHelmClient(namespace string) (*helmclient.Client, error) {
 		return nil, err
 	}
 
-	return &helmClient, nil
+	return helmClient, nil
 }
 
 func AddHelmRepositoryToClient(helmClient helmclient.Client, repositoryName string, repositoryURL string) error {
@@ -70,6 +68,10 @@ func CreateOrUpdateHelmRelease(helmClient helmclient.Client, chartName string, r
 	} else {
 		return release, nil
 	}
+}
+
+func GetHelmRelease(helmClient helmclient.Client, releaseName string) (*release.Release, error) {
+	return helmClient.GetRelease(releaseName)
 }
 
 func ValuesYamlParser(trialPatchValues []models.TrialPatchValue, helmChartPatchValues []models.HelmChartPatchValue) string {

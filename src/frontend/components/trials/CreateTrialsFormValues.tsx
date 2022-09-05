@@ -75,7 +75,6 @@ const CreateTrialsFormValues = ({ app, setIsOpen }: any) => {
         <div>
             <div className="mt-10">
 
-
                 <h1 className="text-lg text-gray-900">
                     New Trial
                 </h1>

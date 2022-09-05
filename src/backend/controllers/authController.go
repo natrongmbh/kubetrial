@@ -35,11 +35,10 @@ func Login(c *fiber.Ctx) error {
 	}
 
 	claims := jwt.MapClaims{
-		"id":         user.ID,
-		"username":   user.Username,
-		"name":       user.Name,
-		"avatar_url": user.Avatar_URL,
-		"exp":        time.Now().Add(time.Hour * 24).Unix(),
+		"id":       user.ID,
+		"username": user.Username,
+		"name":     user.Name,
+		"exp":      time.Now().Add(time.Hour * 24).Unix(),
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	tokenString, err := token.SignedString([]byte(util.JWT_SECRET_KEY))
@@ -60,9 +59,8 @@ func CheckLogin(c *fiber.Ctx) error {
 	}
 
 	smallUser := models.User{
-		Username:   user.Username,
-		Name:       user.Name,
-		Avatar_URL: user.Avatar_URL,
+		Username: user.Username,
+		Name:     user.Name,
 	}
 
 	return c.Status(fiber.StatusOK).JSON(smallUser)

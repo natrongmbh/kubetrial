@@ -28,10 +28,9 @@ func LoadEnv() error {
 	}
 
 	adminUser := models.User{
-		Username:   "admin",
-		Password:   ADMIN_PASSWORD,
-		Name:       "Admin",
-		Avatar_URL: "https://www.gravatar.com/avatar/",
+		Username: "admin",
+		Password: ADMIN_PASSWORD,
+		Name:     "Admin",
 	}
 
 	if err = CreateUser(adminUser); err != nil && err.Error() != "User already exists" {

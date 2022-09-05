@@ -59,10 +59,9 @@ func CreateUser(user models.User) error {
 			return err
 		}
 		tempUser := models.User{
-			Username:   user.Username,
-			Password:   string(password),
-			Name:       user.Name,
-			Avatar_URL: user.Avatar_URL,
+			Username: user.Username,
+			Password: string(password),
+			Name:     user.Name,
 		}
 		if err = database.DBConn.Create(&tempUser).Error; err != nil {
 			return err
@@ -82,10 +81,9 @@ func UpdateUser(user models.User) error {
 		return err
 	}
 	tempUser := models.User{
-		Username:   user.Username,
-		Password:   string(password),
-		Name:       user.Name,
-		Avatar_URL: user.Avatar_URL,
+		Username: user.Username,
+		Password: string(password),
+		Name:     user.Name,
 	}
 
 	var currentUser models.User
