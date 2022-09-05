@@ -34,12 +34,6 @@ const CreateAppForm = ({ setIsOpen }: any) => {
     const [additionalKubernetesManifestsFile, setAdditionalKubernetesManifestsFile] = useState<File | null>(null);
     const [additionalKubernetesManifestsString, setAdditionalKubernetesManifestsString] = useState("");
 
-    // DEFAULT VALUES
-    const [code, setCode] = useState(
-        `function add(a, b) {\n  return a + b;\n}`
-    );
-
-
     const [appName, setAppName] = useState("");
     const [appDescription, setAppDescription] = useState("");
     const [appHelmRepositoryUrl, setAppHelmRepositoryUrl] = useState("");
@@ -58,7 +52,7 @@ const CreateAppForm = ({ setIsOpen }: any) => {
             helm_chart_repository_url: appHelmRepositoryUrl,
             helm_chart_name: appHelmChartName,
             helm_chart_version: appHelmChartVersion,
-            helm_chart_patch_valuestrings: helmPatchValues,
+            helm_chart_patch_values: helmPatchValues,
             default_helm_chart_patch_values: defaultPatchValuesString,
             additional_kubernetes_manifests: additionalKubernetesManifestsString,
             CreatedAt: "",

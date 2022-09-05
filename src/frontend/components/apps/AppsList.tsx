@@ -11,7 +11,7 @@ export interface App {
     helm_chart_repository_url: string;
     helm_chart_name: string;
     helm_chart_version: string;
-    helm_chart_patch_valuestrings: HelmPatchValue[];
+    helm_chart_patch_values: HelmPatchValue[];
     default_helm_chart_patch_values: string;
     additional_kubernetes_manifests: string;
     CreatedAt: string;

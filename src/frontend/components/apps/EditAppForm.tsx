@@ -6,7 +6,7 @@ import { useUserContext } from "../../contexts/userContext";
 import { GithubIcon, GitIcon } from "../../lib/Icons";
 import { AlertType, DefaultAlert, DefaultAlertMessage } from "../alerts/Alerts";
 import Button, { ButtonType } from "../general/Button";
-import { Input } from "../general/form/Input";
+import { FileInput, Input } from "../general/form/Input";
 import InputWithLeadingIcon from "../general/form/InputWithLeadingIcon";
 import Textarea from "../general/form/Textarea";
 import { App } from "./AppsList";
@@ -26,7 +26,7 @@ const EditAppForm = ({ app, setIsOpen }: any) => {
             helm_chart_repository_url: "",
             helm_chart_name: "",
             helm_chart_version: "",
-            helm_chart_patch_valuestrings: [],
+            helm_chart_patch_values: [],
             default_helm_chart_patch_values: "",
             additional_kubernetes_manifests: "",
             CreatedAt: "",
@@ -36,7 +36,7 @@ const EditAppForm = ({ app, setIsOpen }: any) => {
     }
 
     // only safe name and value for helm patch values
-    const safeHelmPatchValues: Array<HelmPatchValue> = Array.from(appData.helm_chart_patch_valuestrings).map((helmPatchValue: HelmPatchValue) => {
+    const safeHelmPatchValues: Array<HelmPatchValue> = Array.from(appData.helm_chart_patch_values).map((helmPatchValue: HelmPatchValue) => {
         return {
             name: helmPatchValue.name,
             value_string: helmPatchValue.value_string,
@@ -53,6 +53,12 @@ const EditAppForm = ({ app, setIsOpen }: any) => {
 
     const [valueName, setValueName] = useState("");
     const [valueString, setValueString] = useState("");
+
+    const [defaultPatchValuesFile, setDefaultPatchValuesFile] = useState<File | null>(null);
+    const [defaultPatchValuesString, setDefaultPatchValuesString] = useState(appData.default_helm_chart_patch_values);
+
+    const [additionalKubernetesManifestsFile, setAdditionalKubernetesManifestsFile] = useState<File | null>(null);
+    const [additionalKubernetesManifestsString, setAdditionalKubernetesManifestsString] = useState(appData.additional_kubernetes_manifests);
 
     // get the keys of the map
     const helmPatchValuesKeys = Object.keys(helmPatchValues);
@@ -74,9 +80,9 @@ const EditAppForm = ({ app, setIsOpen }: any) => {
                 helm_chart_repository_url: appHelmRepositoryUrl,
                 helm_chart_name: appHelmChartName,
                 helm_chart_version: appHelmChartVersion,
-                helm_chart_patch_valuestrings: helmPatchValues,
-                default_helm_chart_patch_values: appData.default_helm_chart_patch_values, // TODO: add this to the form
-                additional_kubernetes_manifests: appData.additional_kubernetes_manifests, //TODO: add this to the form
+                helm_chart_patch_values: helmPatchValues,
+                default_helm_chart_patch_values: defaultPatchValuesString,
+                additional_kubernetes_manifests: additionalKubernetesManifestsString,
                 CreatedAt: appData.CreatedAt,
                 UpdatedAt: appData.UpdatedAt,
                 DeletedAt: appData.DeletedAt,
@@ -190,48 +196,51 @@ const EditAppForm = ({ app, setIsOpen }: any) => {
                 onChange={(e: any) => setAppHelmChartVersion(e.target.value)}
             />
 
-            <h1
-                className="text-xl font-GilroyMedium text-black"
-            >
-                Patch Values
-            </h1>
+            <div>
 
-            <p
-                className="text-sm font-GilroyMedium text-gray-500"
-            >
-                These values will be shown when creating a new trial of this app.
-            </p>
-
-            <div
-                className="grid grid-cols-1 sm:grid-cols-3 gap-4 "
-            >
-                <InputWithLeadingIcon
-                    labelName="Value Name"
-                    inputType="text"
-                    inputName="value-name"
-                    leadingIcon={<KeyIcon className="w-5 h-5" />}
-                    placeholder="App Password"
-                    onChange={(e: any) => setValueName(e.target.value)}
-                    value={valueName}
-                />
-                <InputWithLeadingIcon
-                    labelName="Value String"
-                    inputType="text"
-                    inputName="value-string"
-                    leadingIcon={<BookmarkAltIcon className="w-5 h-5" />}
-                    placeholder="global.auth.password"
-                    onChange={(e: any) => setValueString(e.target.value)}
-                    value={valueString}
-                />
-                <div
-                    className="flex justify-center"
+                <h1
+                    className="text-xl font-GilroyMedium text-black"
                 >
-                    <button
-                        className="text-primary hover:text-primary-dark block"
-                        onClick={handleAddValue}
+                    Patch Values
+                </h1>
+
+                <p
+                    className="text-sm font-GilroyMedium text-gray-500"
+                >
+                    These values will be shown when creating a new trial of this app.
+                </p>
+
+                <div
+                    className="grid grid-cols-1 sm:grid-cols-3 gap-4 "
+                >
+                    <InputWithLeadingIcon
+                        labelName="Value Name"
+                        inputType="text"
+                        inputName="value-name"
+                        leadingIcon={<KeyIcon className="w-5 h-5" />}
+                        placeholder="App Password"
+                        onChange={(e: any) => setValueName(e.target.value)}
+                        value={valueName}
+                    />
+                    <InputWithLeadingIcon
+                        labelName="Value String"
+                        inputType="text"
+                        inputName="value-string"
+                        leadingIcon={<BookmarkAltIcon className="w-5 h-5" />}
+                        placeholder="global.auth.password"
+                        onChange={(e: any) => setValueString(e.target.value)}
+                        value={valueString}
+                    />
+                    <div
+                        className="flex justify-center"
                     >
-                        <PlusIcon className="w-5 h-5 inline-block" /> Add Value
-                    </button>
+                        <button
+                            className="text-primary hover:text-primary-dark block"
+                            onClick={handleAddValue}
+                        >
+                            <PlusIcon className="w-5 h-5 inline-block" /> Add Value
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -302,6 +311,130 @@ const EditAppForm = ({ app, setIsOpen }: any) => {
                             </p>
                         </div>
                 }
+            </div>
+
+            <div>
+                <h1
+                    className="text-xl font-GilroyMedium text-black"
+                >
+                    Default Patch Values
+                </h1>
+                <p
+                    className="text-sm font-GilroyMedium text-gray-500"
+                >
+                    These values will owerwrite the values in the chart for each trial.
+                </p>
+
+                <FileInput
+                    inputName="upload-file"
+                    onChange={(e: any) => {
+                        const file = e.target.files[0];
+
+                        // check if the file is a yaml or yml file
+                        if (file.type === "application/x-yaml" || file.type === "text/yaml" || file.type === "text/x-yaml") {
+                            setDefaultPatchValuesFile(file);
+                            const reader = new FileReader();
+                            reader.onload = (e: any) => {
+                                setDefaultPatchValuesString(e.target.result);
+                            }
+                            reader.readAsText(file);
+
+                            DefaultAlertMessage("Success", "Your file has been parsed.", AlertType.Success);
+
+                        } else {
+                            DefaultAlertMessage("Error", "Please upload a valid yaml file.", AlertType.Error);
+                            return;
+                        }
+                    }}
+                />
+
+                {
+                    defaultPatchValuesString ?
+                        // parse string to yaml
+                        <div
+                            className="bg-gray-200 p-4 rounded-lg shadow-md relative mt-2 "
+                        >
+                            <h1 className="text-sm font-GilroyMedium text-primary">
+                                Default Patch Values:
+                            </h1>
+                            <hr className="my-2 border-primary border-dashed rounded full border-2" />
+                            <pre
+                                className="text-sm text-gray-black"
+                            >
+                                {defaultPatchValuesString}
+                            </pre>
+                            <div
+                                className="absolute right-3 bottom-1 text-primary "
+                            >
+                                {defaultPatchValuesFile?.name}
+                            </div>
+                        </div>
+                        : null
+                }
+
+
+            </div>
+
+            <div>
+                <h1
+                    className="text-xl font-GilroyMedium text-black"
+                >
+                    Additional Kubernetes Resources
+                </h1>
+                <p
+                    className="text-sm font-GilroyMedium text-gray-500"
+                >
+                    These resources will be applied to the trial namespace for each trial.
+                </p>
+
+                <FileInput
+                    inputName="upload-k8s-file"
+                    onChange={(e: any) => {
+                        const file = e.target.files[0];
+
+                        // check if the file is a yaml or yml file
+                        if (file.type === "application/x-yaml" || file.type === "text/yaml" || file.type === "text/x-yaml") {
+                            setAdditionalKubernetesManifestsFile(file);
+                            const reader = new FileReader();
+                            reader.onload = (e: any) => {
+                                setAdditionalKubernetesManifestsString(e.target.result);
+                            }
+                            reader.readAsText(file);
+
+                            DefaultAlertMessage("Success", "Your file has been parsed.", AlertType.Success);
+
+                        } else {
+                            DefaultAlertMessage("Error", "Please upload a valid yaml file.", AlertType.Error);
+                            return;
+                        }
+                    }}
+                />
+
+                {
+                    additionalKubernetesManifestsString ?
+                        // parse string to yaml
+                        <div
+                            className="bg-gray-200 p-4 rounded-lg shadow-md relative mt-2 "
+                        >
+                            <h1 className="text-sm font-GilroyMedium text-primary">
+                                Additional Kubernetes Resources:
+                            </h1>
+                            <hr className="my-2 border-primary border-dashed rounded full border-2" />
+                            <pre
+                                className="text-sm text-gray-black"
+                            >
+                                {additionalKubernetesManifestsString}
+                            </pre>
+                            <div
+                                className="absolute right-3 bottom-1 text-primary "
+                            >
+                                {additionalKubernetesManifestsFile?.name}
+                            </div>
+                        </div>
+                        : null
+                }
+
+
             </div>
 
             <hr className="border-gray-300" />

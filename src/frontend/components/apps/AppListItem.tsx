@@ -21,7 +21,7 @@ const AppListItem = ({ app }: any) => {
             helm_chart_repository_url: "",
             helm_chart_version: "",
             helm_chart_name: "",
-            helm_chart_patch_valuestrings: [],
+            helm_chart_patch_values: [],
             default_helm_chart_patch_values: "",
             additional_kubernetes_manifests: "",
             CreatedAt: "",

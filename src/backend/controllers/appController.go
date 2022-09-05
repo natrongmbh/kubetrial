@@ -26,7 +26,7 @@ func CreateApp(c *fiber.Ctx) error {
 	//parse body["helm_chart_patch_values"] as JSON
 	var helmChartPatchValues []models.HelmChartPatchValue
 
-	for _, v := range body["helm_chart_patch_values"].([]interface{}) {
+	for _, v := range body["helm_chart_patch_value"].([]interface{}) {
 		helmChartPatchValues = append(helmChartPatchValues, models.HelmChartPatchValue{
 			Name:        v.(map[string]interface{})["name"].(string),
 			ValueString: v.(map[string]interface{})["value_string"].(string),
@@ -35,12 +35,14 @@ func CreateApp(c *fiber.Ctx) error {
 
 	// parse request body
 	app := models.App{
-		Name:                   body["name"].(string),
-		Description:            body["description"].(string),
-		HelmChartRepositoryUrl: body["helm_chart_repository_url"].(string),
-		HelmChartName:          body["helm_chart_name"].(string),
-		HelmChartVersion:       body["helm_chart_version"].(string),
-		HelmChartPatchValues:   helmChartPatchValues,
+		Name:                          body["name"].(string),
+		Description:                   body["description"].(string),
+		HelmChartRepositoryUrl:        body["helm_chart_repository_url"].(string),
+		HelmChartName:                 body["helm_chart_name"].(string),
+		HelmChartVersion:              body["helm_chart_version"].(string),
+		DefaultHelmChartPatchValues:   body["default_helm_chart_patch_values"].(string),
+		AdditionalKubernetesManifests: body["additional_kubernetes_manifests"].(string),
+		HelmChartPatchValues:          helmChartPatchValues,
 	}
 
 	if err := database.DBConn.Create(&app).Error; err != nil {
@@ -122,6 +124,8 @@ func UpdateApp(c *fiber.Ctx) error {
 	app.HelmChartRepositoryUrl = body["helm_chart_repository_url"].(string)
 	app.HelmChartName = body["helm_chart_name"].(string)
 	app.HelmChartVersion = body["helm_chart_version"].(string)
+	app.DefaultHelmChartPatchValues = body["default_helm_chart_patch_values"].(string)
+	app.AdditionalKubernetesManifests = body["additional_kubernetes_manifests"].(string)
 	// parse body["helm_chart_patch_values"] as JSON
 	var helmChartPatchValues []models.HelmChartPatchValue
 
