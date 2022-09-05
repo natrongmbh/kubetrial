@@ -42,12 +42,6 @@ func CreateTrial(c *fiber.Ctx) error {
 		TrialPatchValues: trialPatchValues,
 	}
 
-	if err := database.DBConn.Create(&trial).Error; err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"message": "Error creating trial",
-		})
-	}
-
 	// get app from database
 	app := models.App{}
 	if err := database.DBConn.First(&app, trial.AppID).Error; err != nil {
@@ -95,9 +89,22 @@ func CreateTrial(c *fiber.Ctx) error {
 		helm.ValuesYamlParser(trialPatchValues, helmChartPatchValues),
 	)
 
-	if err != nil {
+	if err != nil && release == nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"message": "Error creating helm release",
+			"error":   err.Error(),
+		})
+	}
+
+	if err := database.DBConn.Create(&trial).Error; err != nil {
+		// delete helm release
+		// if err := helm.DeleteHelmRelease(*helmClient, app.HelmChartName, helm.GetNamespaceName(trial.Name)); err != nil {
+		// 	return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+		// 		"message": "Error deleting helm release",
+		// 	})
+		// }
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": "Error creating trial",
 			"error":   err.Error(),
 		})
 	}

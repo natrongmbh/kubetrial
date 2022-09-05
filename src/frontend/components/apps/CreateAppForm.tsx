@@ -6,7 +6,7 @@ import { useUserContext } from "../../contexts/userContext";
 import { GithubIcon, GitIcon } from "../../lib/Icons";
 import { AlertType, DefaultAlert, DefaultAlertMessage } from "../alerts/Alerts";
 import Button, { ButtonType } from "../general/Button";
-import Input from "../general/form/Input";
+import { Input, FileInput } from "../general/form/Input";
 import InputWithLeadingIcon from "../general/form/InputWithLeadingIcon";
 import Textarea from "../general/form/Textarea";
 import { App } from "./AppsList";
@@ -28,6 +28,17 @@ const CreateAppForm = ({ setIsOpen }: any) => {
     // get the keys of the map
     const helmPatchValuesKeys = Object.keys(helmPatchValues);
 
+    const [defaultPatchValuesFile, setDefaultPatchValuesFile] = useState<File | null>(null);
+    const [defaultPatchValuesString, setDefaultPatchValuesString] = useState("");
+
+    const [additionalKubernetesManifestsFile, setAdditionalKubernetesManifestsFile] = useState<File | null>(null);
+    const [additionalKubernetesManifestsString, setAdditionalKubernetesManifestsString] = useState("");
+
+    // DEFAULT VALUES
+    const [code, setCode] = useState(
+        `function add(a, b) {\n  return a + b;\n}`
+    );
+
 
     const [appName, setAppName] = useState("");
     const [appDescription, setAppDescription] = useState("");
@@ -47,7 +58,9 @@ const CreateAppForm = ({ setIsOpen }: any) => {
             helm_chart_repository_url: appHelmRepositoryUrl,
             helm_chart_name: appHelmChartName,
             helm_chart_version: appHelmChartVersion,
-            helm_chart_patch_values: helmPatchValues,
+            helm_chart_patch_valuestrings: helmPatchValues,
+            default_helm_chart_patch_values: defaultPatchValuesString,
+            additional_kubernetes_manifests: additionalKubernetesManifestsString,
             CreatedAt: "",
             UpdatedAt: "",
             DeletedAt: ""
@@ -130,17 +143,19 @@ const CreateAppForm = ({ setIsOpen }: any) => {
                 onChange={(e: any) => setAppHelmChartVersion(e.target.value)}
             />
 
-            <h1
-                className="text-xl font-GilroyMedium text-black"
-            >
-                Patch Values
-            </h1>
+            <div>
+                <h1
+                    className="text-xl font-GilroyMedium text-black"
+                >
+                    Patch Values
+                </h1>
 
-            <p
-                className="text-sm font-GilroyMedium text-gray-500"
-            >
-                These values will be shown when creating a new trial of this app.
-            </p>
+                <p
+                    className="text-sm font-GilroyMedium text-gray-500"
+                >
+                    These values will be shown when creating a new trial of this app.
+                </p>
+            </div>
 
             <div
                 className="grid grid-cols-1 sm:grid-cols-3 gap-4 "
@@ -241,6 +256,130 @@ const CreateAppForm = ({ setIsOpen }: any) => {
                             </p>
                         </div>
                 }
+
+            </div>
+
+            <div>
+                <h1
+                    className="text-xl font-GilroyMedium text-black"
+                >
+                    Default Patch Values
+                </h1>
+                <p
+                    className="text-sm font-GilroyMedium text-gray-500"
+                >
+                    These values will owerwrite the values in the chart for each trial.
+                </p>
+
+                <FileInput
+                    inputName="upload-file"
+                    onChange={(e: any) => {
+                        const file = e.target.files[0];
+
+                        // check if the file is a yaml or yml file
+                        if (file.type === "application/x-yaml" || file.type === "text/yaml" || file.type === "text/x-yaml") {
+                            setDefaultPatchValuesFile(file);
+                            const reader = new FileReader();
+                            reader.onload = (e: any) => {
+                                setDefaultPatchValuesString(e.target.result);
+                            }
+                            reader.readAsText(file);
+
+                            DefaultAlertMessage("Success", "Your file has been parsed.", AlertType.Success);
+
+                        } else {
+                            DefaultAlertMessage("Error", "Please upload a valid yaml file.", AlertType.Error);
+                            return;
+                        }
+                    }}
+                />
+
+                {
+                    defaultPatchValuesString ?
+                        // parse string to yaml
+                        <div
+                            className="bg-gray-200 p-4 rounded-lg shadow-md relative mt-2 "
+                        >
+                            <h1 className="text-sm font-GilroyMedium text-primary">
+                                Default Patch Values:
+                            </h1>
+                            <hr className="my-2 border-primary border-dashed rounded full border-2" />
+                            <pre
+                                className="text-sm text-gray-black"
+                            >
+                                {defaultPatchValuesString}
+                            </pre>
+                            <div
+                                className="absolute right-3 bottom-1 text-primary "
+                            >
+                                {defaultPatchValuesFile?.name}
+                            </div>
+                        </div>
+                        : null
+                }
+
+
+            </div>
+
+            <div>
+                <h1
+                    className="text-xl font-GilroyMedium text-black"
+                >
+                    Additional Kubernetes Resources
+                </h1>
+                <p
+                    className="text-sm font-GilroyMedium text-gray-500"
+                >
+                    These resources will be applied to the trial namespace for each trial.
+                </p>
+
+                <FileInput
+                    inputName="upload-k8s-file"
+                    onChange={(e: any) => {
+                        const file = e.target.files[0];
+
+                        // check if the file is a yaml or yml file
+                        if (file.type === "application/x-yaml" || file.type === "text/yaml" || file.type === "text/x-yaml") {
+                            setAdditionalKubernetesManifestsFile(file);
+                            const reader = new FileReader();
+                            reader.onload = (e: any) => {
+                                setAdditionalKubernetesManifestsString(e.target.result);
+                            }
+                            reader.readAsText(file);
+
+                            DefaultAlertMessage("Success", "Your file has been parsed.", AlertType.Success);
+
+                        } else {
+                            DefaultAlertMessage("Error", "Please upload a valid yaml file.", AlertType.Error);
+                            return;
+                        }
+                    }}
+                />
+
+                {
+                    additionalKubernetesManifestsString ?
+                        // parse string to yaml
+                        <div
+                            className="bg-gray-200 p-4 rounded-lg shadow-md relative mt-2 "
+                        >
+                            <h1 className="text-sm font-GilroyMedium text-primary">
+                                Additional Kubernetes Resources:
+                            </h1>
+                            <hr className="my-2 border-primary border-dashed rounded full border-2" />
+                            <pre
+                                className="text-sm text-gray-black"
+                            >
+                                {additionalKubernetesManifestsString}
+                            </pre>
+                            <div
+                                className="absolute right-3 bottom-1 text-primary "
+                            >
+                                {additionalKubernetesManifestsFile?.name}
+                            </div>
+                        </div>
+                        : null
+                }
+
 
             </div>
 

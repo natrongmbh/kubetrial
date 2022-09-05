@@ -6,7 +6,7 @@ import { useUserContext } from "../../contexts/userContext";
 import { GithubIcon, GitIcon } from "../../lib/Icons";
 import { AlertType, DefaultAlert, DefaultAlertMessage } from "../alerts/Alerts";
 import Button, { ButtonType } from "../general/Button";
-import Input from "../general/form/Input";
+import { Input } from "../general/form/Input";
 import InputWithLeadingIcon from "../general/form/InputWithLeadingIcon";
 import Textarea from "../general/form/Textarea";
 import { App } from "./AppsList";
@@ -26,7 +26,9 @@ const EditAppForm = ({ app, setIsOpen }: any) => {
             helm_chart_repository_url: "",
             helm_chart_name: "",
             helm_chart_version: "",
-            helm_chart_patch_values: [],
+            helm_chart_patch_valuestrings: [],
+            default_helm_chart_patch_values: "",
+            additional_kubernetes_manifests: "",
             CreatedAt: "",
             UpdatedAt: "",
             DeletedAt: ""
@@ -34,7 +36,7 @@ const EditAppForm = ({ app, setIsOpen }: any) => {
     }
 
     // only safe name and value for helm patch values
-    const safeHelmPatchValues: Array<HelmPatchValue> = Array.from(appData.helm_chart_patch_values).map((helmPatchValue: HelmPatchValue) => {
+    const safeHelmPatchValues: Array<HelmPatchValue> = Array.from(appData.helm_chart_patch_valuestrings).map((helmPatchValue: HelmPatchValue) => {
         return {
             name: helmPatchValue.name,
             value_string: helmPatchValue.value_string,
@@ -72,7 +74,9 @@ const EditAppForm = ({ app, setIsOpen }: any) => {
                 helm_chart_repository_url: appHelmRepositoryUrl,
                 helm_chart_name: appHelmChartName,
                 helm_chart_version: appHelmChartVersion,
-                helm_chart_patch_values: helmPatchValues,
+                helm_chart_patch_valuestrings: helmPatchValues,
+                default_helm_chart_patch_values: appData.default_helm_chart_patch_values, // TODO: add this to the form
+                additional_kubernetes_manifests: appData.additional_kubernetes_manifests, //TODO: add this to the form
                 CreatedAt: appData.CreatedAt,
                 UpdatedAt: appData.UpdatedAt,
                 DeletedAt: appData.DeletedAt,
@@ -86,7 +90,7 @@ const EditAppForm = ({ app, setIsOpen }: any) => {
                 }).catch(() => {
                     DefaultAlert("Error updating app", AlertType.Error)
                 })
-                
+
         }
     }
 

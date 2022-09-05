@@ -7,23 +7,13 @@ import (
 
 	helmclient "github.com/mittwald/go-helm-client"
 	"github.com/natrongmbh/kubetrial/models"
+	"github.com/natrongmbh/kubetrial/util"
 	"helm.sh/helm/v3/pkg/release"
 	"helm.sh/helm/v3/pkg/repo"
 )
 
-var (
-	SpecialCharacters string = "!@#$%^&*()_+-=[]{}|;':,./<>?`~"
-)
-
 func GetNamespaceName(trialName string) string {
-	// convert trialName to lowercase and replace spaces with hyphens
-	returnString := strings.ToLower(trialName)
-	returnString = strings.Replace(returnString, " ", "-", -1)
-	// remove special characters from returnString
-	for _, c := range SpecialCharacters {
-		returnString = strings.Replace(returnString, string(c), "", -1)
-	}
-	return returnString
+	return util.StringParser(trialName)
 }
 
 func CreateHelmClient(namespace string) (*helmclient.Client, error) {
@@ -46,7 +36,7 @@ func CreateHelmClient(namespace string) (*helmclient.Client, error) {
 
 func AddHelmRepositoryToClient(helmClient helmclient.Client, repositoryName string, repositoryURL string) error {
 	chartRepo := repo.Entry{
-		Name: repositoryName,
+		Name: strings.ToLower(repositoryName),
 		URL:  repositoryURL,
 	}
 
@@ -60,9 +50,9 @@ func AddHelmRepositoryToClient(helmClient helmclient.Client, repositoryName stri
 func CreateOrUpdateHelmRelease(helmClient helmclient.Client, chartName string, releaseName string, namespace string, version string, valuesYaml string) (*release.Release, error) {
 
 	chartSpec := helmclient.ChartSpec{
-		ChartName:       chartName,
-		ReleaseName:     releaseName,
-		Namespace:       namespace,
+		ChartName:       strings.ToLower(chartName),
+		ReleaseName:     strings.ToLower(releaseName),
+		Namespace:       GetNamespaceName(namespace),
 		CreateNamespace: true,
 		Timeout:         32 * time.Second,
 		Version:         version,

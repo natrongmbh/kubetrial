@@ -27,11 +27,20 @@ func GetStats(c *fiber.Ctx) error {
 	totalApps := []models.App{}
 	database.DBConn.Find(&totalApps)
 
+	//  Get all trials from the database created in the last 30 days
+	trials := []models.Trial{}
+	trialsDeleted := []models.Trial{}
+	database.DBConn.Where("created_at > ?", timeLast30Days).Find(&trials)
+	database.DBConn.Where("deleted_at > ?", timeLast30Days).Find(&trialsDeleted)
+
+	totalTrials := []models.Trial{}
+	database.DBConn.Find(&totalTrials)
+
 	stats := Stats{
 		TotalAppCount:        len(totalApps),
 		AppCountLast30Days:   len(apps) - len(appsDeleted),
-		TotalTrialCount:      20,
-		TrialCountLast30Days: 10,
+		TotalTrialCount:      len(totalTrials),
+		TrialCountLast30Days: len(trials) - len(trialsDeleted),
 	}
 
 	return c.JSON(stats)

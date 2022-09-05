@@ -11,19 +11,21 @@ export interface App {
     helm_chart_repository_url: string;
     helm_chart_name: string;
     helm_chart_version: string;
-    helm_chart_patch_values: HelmPatchValue[];
+    helm_chart_patch_valuestrings: HelmPatchValue[];
+    default_helm_chart_patch_values: string;
+    additional_kubernetes_manifests: string;
     CreatedAt: string;
     UpdatedAt: string;
     DeletedAt: string;
 }
 
-export interface HelmChartPatchValue {
+export interface DefaultPatchValue {
     ID: number | undefined;
-    name: string;
-    value_string: string;
-    CreatedAt: string;
-    UpdatedAt: string;
-    DeletedAt: string;
+    value: string | undefined;
+    helm_chart_patch_value_id: number;
+    CreatedAt: string | undefined;
+    UpdatedAt: string | undefined;
+    DeletedAt: string | undefined;
 }
 
 const AppsList = () => {
