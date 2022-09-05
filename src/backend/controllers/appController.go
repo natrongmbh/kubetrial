@@ -35,14 +35,13 @@ func CreateApp(c *fiber.Ctx) error {
 
 	// parse request body
 	app := models.App{
-		Name:                          body["name"].(string),
-		Description:                   body["description"].(string),
-		HelmChartRepositoryUrl:        body["helm_chart_repository_url"].(string),
-		HelmChartName:                 body["helm_chart_name"].(string),
-		HelmChartVersion:              body["helm_chart_version"].(string),
-		DefaultHelmChartPatchValues:   body["default_helm_chart_patch_values"].(string),
-		AdditionalKubernetesManifests: body["additional_kubernetes_manifests"].(string),
-		HelmChartPatchValues:          helmChartPatchValues,
+		Name:                        body["name"].(string),
+		Description:                 body["description"].(string),
+		HelmChartRepositoryUrl:      body["helm_chart_repository_url"].(string),
+		HelmChartName:               body["helm_chart_name"].(string),
+		HelmChartVersion:            body["helm_chart_version"].(string),
+		DefaultHelmChartPatchValues: body["default_helm_chart_patch_values"].(string),
+		HelmChartPatchValues:        helmChartPatchValues,
 	}
 
 	if err := database.DBConn.Create(&app).Error; err != nil {
@@ -125,7 +124,6 @@ func UpdateApp(c *fiber.Ctx) error {
 	app.HelmChartName = body["helm_chart_name"].(string)
 	app.HelmChartVersion = body["helm_chart_version"].(string)
 	app.DefaultHelmChartPatchValues = body["default_helm_chart_patch_values"].(string)
-	app.AdditionalKubernetesManifests = body["additional_kubernetes_manifests"].(string)
 	// parse body["helm_chart_patch_values"] as JSON
 	var helmChartPatchValues []models.HelmChartPatchValue
 

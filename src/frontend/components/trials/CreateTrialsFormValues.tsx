@@ -65,7 +65,7 @@ const CreateTrialsFormValues = ({ app, setIsOpen }: any) => {
                 setIsOpen(false);
             })
             .catch((error) => {
-                DefaultAlertMessage("Error", "Something went wrong", AlertType.Error);
+                DefaultAlertMessage("Error", error.response.data.error, AlertType.Error);
                 console.log(error);
             });
 
@@ -125,8 +125,6 @@ const CreateTrialsFormValues = ({ app, setIsOpen }: any) => {
                                                 value: e.target.value,
                                                 helm_chart_patch_value_id: helm_chart_patch_value.ID,
                                             };
-
-                                            console.log("newTrialPatchValue", newTrialPatchValue);
 
                                             // find the matching TrialPatchValue in the array and update it
                                             let index = newTrialPatchValues.findIndex((trialPatchValue: smallTrialPatchValue) => trialPatchValue.helm_chart_patch_value_id === helm_chart_patch_value.ID);

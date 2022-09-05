@@ -1,4 +1,4 @@
-import { ArchiveIcon, BookmarkAltIcon, KeyIcon, LinkIcon, PlusIcon, TagIcon, TrashIcon } from "@heroicons/react/outline";
+import { ArchiveIcon, BookmarkAltIcon, DocumentRemoveIcon, KeyIcon, LinkIcon, PlusIcon, TagIcon, TrashIcon } from "@heroicons/react/outline";
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import Api from "../../config/Api";
@@ -28,7 +28,6 @@ const EditAppForm = ({ app, setIsOpen }: any) => {
             helm_chart_version: "",
             helm_chart_patch_values: [],
             default_helm_chart_patch_values: "",
-            additional_kubernetes_manifests: "",
             CreatedAt: "",
             UpdatedAt: "",
             DeletedAt: ""
@@ -57,9 +56,6 @@ const EditAppForm = ({ app, setIsOpen }: any) => {
     const [defaultPatchValuesFile, setDefaultPatchValuesFile] = useState<File | null>(null);
     const [defaultPatchValuesString, setDefaultPatchValuesString] = useState(appData.default_helm_chart_patch_values);
 
-    const [additionalKubernetesManifestsFile, setAdditionalKubernetesManifestsFile] = useState<File | null>(null);
-    const [additionalKubernetesManifestsString, setAdditionalKubernetesManifestsString] = useState(appData.additional_kubernetes_manifests);
-
     // get the keys of the map
     const helmPatchValuesKeys = Object.keys(helmPatchValues);
 
@@ -82,7 +78,6 @@ const EditAppForm = ({ app, setIsOpen }: any) => {
                 helm_chart_version: appHelmChartVersion,
                 helm_chart_patch_values: helmPatchValues,
                 default_helm_chart_patch_values: defaultPatchValuesString,
-                additional_kubernetes_manifests: additionalKubernetesManifestsString,
                 CreatedAt: appData.CreatedAt,
                 UpdatedAt: appData.UpdatedAt,
                 DeletedAt: appData.DeletedAt,
@@ -325,29 +320,6 @@ const EditAppForm = ({ app, setIsOpen }: any) => {
                     These values will owerwrite the values in the chart for each trial.
                 </p>
 
-                <FileInput
-                    inputName="upload-file"
-                    onChange={(e: any) => {
-                        const file = e.target.files[0];
-
-                        // check if the file is a yaml or yml file
-                        if (file.type === "application/x-yaml" || file.type === "text/yaml" || file.type === "text/x-yaml") {
-                            setDefaultPatchValuesFile(file);
-                            const reader = new FileReader();
-                            reader.onload = (e: any) => {
-                                setDefaultPatchValuesString(e.target.result);
-                            }
-                            reader.readAsText(file);
-
-                            DefaultAlertMessage("Success", "Your file has been parsed.", AlertType.Success);
-
-                        } else {
-                            DefaultAlertMessage("Error", "Please upload a valid yaml file.", AlertType.Error);
-                            return;
-                        }
-                    }}
-                />
-
                 {
                     defaultPatchValuesString ?
                         // parse string to yaml
@@ -368,70 +340,40 @@ const EditAppForm = ({ app, setIsOpen }: any) => {
                             >
                                 {defaultPatchValuesFile?.name}
                             </div>
-                        </div>
-                        : null
-                }
-
-
-            </div>
-
-            <div>
-                <h1
-                    className="text-xl font-GilroyMedium text-black"
-                >
-                    Additional Kubernetes Resources
-                </h1>
-                <p
-                    className="text-sm font-GilroyMedium text-gray-500"
-                >
-                    These resources will be applied to the trial namespace for each trial.
-                </p>
-
-                <FileInput
-                    inputName="upload-k8s-file"
-                    onChange={(e: any) => {
-                        const file = e.target.files[0];
-
-                        // check if the file is a yaml or yml file
-                        if (file.type === "application/x-yaml" || file.type === "text/yaml" || file.type === "text/x-yaml") {
-                            setAdditionalKubernetesManifestsFile(file);
-                            const reader = new FileReader();
-                            reader.onload = (e: any) => {
-                                setAdditionalKubernetesManifestsString(e.target.result);
-                            }
-                            reader.readAsText(file);
-
-                            DefaultAlertMessage("Success", "Your file has been parsed.", AlertType.Success);
-
-                        } else {
-                            DefaultAlertMessage("Error", "Please upload a valid yaml file.", AlertType.Error);
-                            return;
-                        }
-                    }}
-                />
-
-                {
-                    additionalKubernetesManifestsString ?
-                        // parse string to yaml
-                        <div
-                            className="bg-gray-200 p-4 rounded-lg shadow-md relative mt-2 "
-                        >
-                            <h1 className="text-sm font-GilroyMedium text-primary">
-                                Additional Kubernetes Resources:
-                            </h1>
-                            <hr className="my-2 border-primary border-dashed rounded full border-2" />
-                            <pre
-                                className="text-sm text-gray-black"
-                            >
-                                {additionalKubernetesManifestsString}
-                            </pre>
                             <div
-                                className="absolute right-3 bottom-1 text-primary "
+                                className="absolute top-0 right-0 bg-red-500 rounded-lg p-2 shadow-lg cursor-pointer hover:px-4 transition-all duration-150 ease-in-out"
+                                onClick={() => {
+                                    setDefaultPatchValuesString("");
+                                    setDefaultPatchValuesFile(null);
+                                }}
                             >
-                                {additionalKubernetesManifestsFile?.name}
+                                <DocumentRemoveIcon className="w-5 h-5 text-white" />
                             </div>
                         </div>
-                        : null
+                        : (
+                            <FileInput
+                                inputName="upload-file"
+                                onChange={(e: any) => {
+                                    const file = e.target.files[0];
+
+                                    // check if the file is a yaml or yml file
+                                    if (file.type === "application/x-yaml" || file.type === "text/yaml" || file.type === "text/x-yaml") {
+                                        setDefaultPatchValuesFile(file);
+                                        const reader = new FileReader();
+                                        reader.onload = (e: any) => {
+                                            setDefaultPatchValuesString(e.target.result);
+                                        }
+                                        reader.readAsText(file);
+
+                                        DefaultAlertMessage("Success", "Your file has been parsed.", AlertType.Success);
+
+                                    } else {
+                                        DefaultAlertMessage("Error", "Please upload a valid yaml file.", AlertType.Error);
+                                        return;
+                                    }
+                                }}
+                            />
+                        )
                 }
 
 

@@ -13,7 +13,6 @@ export interface App {
     helm_chart_version: string;
     helm_chart_patch_values: HelmPatchValue[];
     default_helm_chart_patch_values: string;
-    additional_kubernetes_manifests: string;
     CreatedAt: string;
     UpdatedAt: string;
     DeletedAt: string;

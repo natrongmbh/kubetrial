@@ -14,8 +14,12 @@ import (
 	"helm.sh/helm/v3/pkg/repo"
 )
 
+var (
+	Prefix = "kubetrial"
+)
+
 func GetNamespaceName(trialName string) string {
-	return util.StringParser(trialName)
+	return Prefix + "-" + util.StringParser(trialName)
 }
 
 func CreateHelmClient(namespace string) (*helmclient.Client, error) {
@@ -54,7 +58,7 @@ func CreateOrUpdateHelmRelease(helmClient helmclient.Client, chartName string, r
 	chartSpec := helmclient.ChartSpec{
 		ChartName:       strings.ToLower(chartName),
 		ReleaseName:     strings.ToLower(releaseName),
-		Namespace:       GetNamespaceName(namespace),
+		Namespace:       namespace,
 		CreateNamespace: true,
 		Timeout:         32 * time.Second,
 		Version:         version,
