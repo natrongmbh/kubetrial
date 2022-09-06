@@ -89,7 +89,9 @@ You can deploy kubetrial in your Kubernetes cluster, but you have to set all the
 
 #### Frontend
 
-*none*
+- `NEXT_API_URI` (required): The URI of the backend API.
+  Default: *none*
+
 
 #### Backend
 

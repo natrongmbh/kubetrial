@@ -7,7 +7,7 @@ module.exports = {
   trailingSlash: true,
   nextConfig,
   publicRuntimeConfig: {
-    ENV_PLACEHOLDER: process.env.ENV_PLACEHOLDER,
+    ENV_API_URI: process.env.ENV_API_URI,
   },
   images: {
     // loader: "custom",
