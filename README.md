@@ -89,7 +89,7 @@ You can deploy kubetrial in your Kubernetes cluster, but you have to set all the
 
 #### Frontend
 
-- `NEXT_API_URI` (required): The URI of the backend API.
+- `NEXT_API_URI` (required): The URI of the backend API.  
   Default: *none*
 
 
@@ -98,15 +98,15 @@ You can deploy kubetrial in your Kubernetes cluster, but you have to set all the
 - `CORS` (optional): Set CORS headers for the API.  
   Default: `*`
 - `JWT_SECRET_KEY` (optional): Set the JWT secret key.
-- `ADMIN_PASSWORD` (optional): Set the admin password.
+- `ADMIN_PASSWORD` (optional): Set the admin password.  
   Default: `admin`
-- `DB_USERNAME` (optional): Set the database username.
+- `DB_USERNAME` (optional): Set the database username.  
   Default: `postgres`
-- `DB_PASSWORD` (optional): Set the database password.
+- `DB_PASSWORD` (optional): Set the database password.  
   Default: `postgres`
-- `DB_NAME` (optional): Set the database name.
+- `DB_NAME` (optional): Set the database name.  
   Default: `postgres`
-- `DB_HOST` (optional): Set the database host.
+- `DB_HOST` (optional): Set the database host.  
   Default: `localhost`
-- `DB_PORT` (optional): Set the database port.
+- `DB_PORT` (optional): Set the database port.  
   Default: `5432`
