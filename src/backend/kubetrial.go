@@ -8,6 +8,8 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/gofiber/fiber/v2/middleware/logger"
+	"github.com/natrongmbh/kubetrial/database"
 	"github.com/natrongmbh/kubetrial/k8s"
 	"github.com/natrongmbh/kubetrial/routes"
 	"github.com/natrongmbh/kubetrial/util"
@@ -23,6 +25,17 @@ import (
 func init() {
 	util.InitLoggers()
 	util.Status = "OK"
+
+	if err := util.LoadDatabaseEnv(); err != nil {
+		util.ErrorLogger.Println(err)
+		os.Exit(1)
+	}
+
+	if err := database.InitDB(); err != nil {
+		util.ErrorLogger.Println("Error initializing database:", err)
+		util.Status = "ERROR"
+		os.Exit(1)
+	}
 
 	if err := util.LoadEnv(); err != nil {
 		util.ErrorLogger.Println("Error loading environment variables:", err)
@@ -93,6 +106,11 @@ func main() {
 		AllowMethods:     "GET,POST,PUT,DELETE,OPTIONS",
 		AllowCredentials: true,
 		AllowOrigins:     util.CORS,
+	}))
+
+	app.Use(logger.New(logger.Config{
+		TimeFormat: "2006/01/02 - 15:04:05",
+		TimeZone:   "Europe/Zurich",
 	}))
 
 	routes.Setup(app)

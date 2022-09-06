@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"encoding/json"
 	"errors"
 	"strings"
 	"time"
@@ -12,142 +11,63 @@ import (
 	"github.com/natrongmbh/kubetrial/util"
 )
 
-// GetGithubTeams returns the redirect url
-func CheckGithubLogin(c *fiber.Ctx) error {
+func Login(c *fiber.Ctx) error {
 
-	util.InfoLogger.Printf("%s %s %s", c.IP(), c.Method(), c.Path())
-
-	githubUser, err := CheckAuth(c)
-	if githubUser.ID == 0 || err != nil {
-		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-			"message": "Unauthorized",
-		})
+	var data struct {
+		Username string `json:"username"`
+		Password string `json:"password"`
 	}
-
-	return c.JSON(githubUser)
-}
-
-// FrontendGithubLogin gets the github data and sends it to LoggedIn()
-func FrontendGithubLogin(c *fiber.Ctx) error {
-
-	util.InfoLogger.Printf("%s %s %s", c.IP(), c.Method(), c.Path())
-
-	var data map[string]string
 
 	if err := c.BodyParser(&data); err != nil {
-		return c.Status(400).JSON(fiber.Map{
-			"status":  "error",
-			"message": "Invalid request body (body parser)",
+		c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "Invalid request",
 		})
+		return err
 	}
 
-	// get access_token from data
-	if githubCode := data["github_code"]; githubCode == "" {
-		return c.Status(400).JSON(fiber.Map{
-			"status":  "error",
-			"message": "Invalid request body (github_code)",
-		})
-	} else {
-		return LoggedIn(c, githubCode)
+	user, err := util.GetUserByUsername(data.Username)
+	if err != nil {
+		return err
 	}
 
-}
-
-// GithubCallback handles the callback with the code query param
-func GithubCallback(c *fiber.Ctx) error {
-
-	util.InfoLogger.Printf("%s %s %s", c.IP(), c.Method(), c.Path())
-
-	// get code from "code" query param
-	if githubCode := c.Query("code"); githubCode == "" {
-		return c.Status(400).JSON(fiber.Map{
-			"status":  "error",
-			"message": "Invalid request body",
-		})
-	} else {
-		return LoggedIn(c, githubCode)
+	if err := util.CheckPasswordOfUser(data.Password, user.ID); err != nil {
+		return err
 	}
-}
-
-// LoggedIn handles the login and returns the token
-func LoggedIn(c *fiber.Ctx, githubCode string) error {
-
-	githubAccessToken := util.GetGithubAccessToken(githubCode)
-	githubTeamsData := util.GetGithubTeams(githubAccessToken)
-	githubUserData := util.GetGithubUser(githubAccessToken)
-
-	if githubTeamsData == "" || githubUserData == "" {
-		return c.Status(500).JSON(fiber.Map{
-			"status":  "error",
-			"message": "Failed to get github data",
-		})
-	}
-
-	var githubTeamsDataMap []map[string]interface{}
-	if err := json.Unmarshal([]byte(githubTeamsData), &githubTeamsDataMap); err != nil {
-		return c.Status(500).JSON(fiber.Map{
-			"message":       "Internal server error",
-			"error":         err.Error(),
-			"github_mesage": githubTeamsData,
-		})
-	}
-
-	var githubUserDataMap map[string]interface{}
-	if err := json.Unmarshal([]byte(githubUserData), &githubUserDataMap); err != nil {
-		return c.Status(500).JSON(fiber.Map{
-			"message": "Internal server error",
-			"error":   err.Error(),
-		})
-	}
-
-	var githubTeamSlugs []string
-	temp_is_admin := false
-
-	for _, githubTeam := range githubTeamsDataMap {
-		githubTeamSlugs = append(githubTeamSlugs, githubTeam["slug"].(string))
-		if githubTeam["slug"].(string) == "admins" {
-			temp_is_admin = true
-		}
-	}
-
-	githubUser := models.GithubUser{
-		ID:                 githubUserDataMap["id"].(float64),
-		Login:              githubUserDataMap["login"].(string),
-		Email:              githubUserDataMap["email"].(string),
-		Name:               githubUserDataMap["name"].(string),
-		AvatarURL:          githubUserDataMap["avatar_url"].(string),
-		GithubTeamSlugs:    githubTeamSlugs,
-		GithubAccessToken:  githubAccessToken,
-		GithubOrganization: util.GITHUB_ORGANIZATION,
-		Is_Admin:           temp_is_admin,
-	}
-
-	exp := time.Now().Add(time.Hour * 24).Unix()
 
 	claims := jwt.MapClaims{
-		"github_team_slugs":   githubTeamSlugs,
-		"id":                  githubUser.ID,
-		"login":               githubUser.Login,
-		"email":               githubUser.Email,
-		"name":                githubUser.Name,
-		"avatar_url":          githubUser.AvatarURL,
-		"github_organization": util.GITHUB_ORGANIZATION,
-		"github_access_token": githubUser.GithubAccessToken,
-		"is_admin":            githubUser.Is_Admin,
-		"exp":                 exp,
+		"id":       user.ID,
+		"username": user.Username,
+		"name":     user.Name,
+		"exp":      time.Now().Add(time.Hour * 24).Unix(),
 	}
-
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	tokenString, _ := token.SignedString([]byte(util.JWT_SECRET_KEY))
-
-	return c.JSON(fiber.Map{
-		"githubUser": githubUser,
-		"token":      tokenString,
+	tokenString, err := token.SignedString([]byte(util.JWT_SECRET_KEY))
+	if err != nil {
+		return err
+	}
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"token": tokenString,
+		"user":  user,
 	})
 }
 
-// CheckAuth checks if the token is valid and returns the github team slugs
-func CheckAuth(c *fiber.Ctx) (models.GithubUser, error) {
+func CheckLogin(c *fiber.Ctx) error {
+
+	user, err := CheckAuth(c)
+	if err != nil {
+		return err
+	}
+
+	smallUser := models.User{
+		Username: user.Username,
+		Name:     user.Name,
+	}
+
+	return c.Status(fiber.StatusOK).JSON(smallUser)
+}
+
+// CheckAuth checks if the token is valid and returns the User model
+func CheckAuth(c *fiber.Ctx) (models.User, error) {
 	var token *jwt.Token
 	var tokenString string
 
@@ -159,12 +79,12 @@ func CheckAuth(c *fiber.Ctx) (models.GithubUser, error) {
 	if len(bearerTokenSplit) == 2 {
 		tokenString = bearerTokenSplit[1]
 	} else {
-		return models.GithubUser{}, errors.New("Invalid bearer token")
+		return models.User{}, errors.New("Invalid bearer token")
 	}
 
 	if tokenString == "" {
 		// return unauthorized
-		return models.GithubUser{}, errors.New("Invalid bearer token")
+		return models.User{}, errors.New("Invalid bearer token")
 	}
 
 	var err error
@@ -174,53 +94,37 @@ func CheckAuth(c *fiber.Ctx) (models.GithubUser, error) {
 	})
 
 	if err != nil {
-		return models.GithubUser{}, err
+		return models.User{}, err
 	}
 
 	if token == nil {
-		return models.GithubUser{}, errors.New("Invalid bearer token")
+		return models.User{}, errors.New("Invalid bearer token")
 	}
 
 	// validate expiration
 	if !token.Valid {
-		return models.GithubUser{}, errors.New("Invalid bearer token")
+		return models.User{}, errors.New("Invalid bearer token")
 	}
 
 	// validate claims
 	claims := token.Claims.(jwt.MapClaims)
 
 	if claims["exp"] == nil {
-		return models.GithubUser{}, errors.New("Invalid bearer token")
+		return models.User{}, errors.New("Invalid bearer token")
 	} else {
 		exp := claims["exp"]
 		// convert exp to int64
 		expInt64 := int64(exp.(float64))
 		if expInt64 < time.Now().Unix() {
-			return models.GithubUser{}, errors.New("Invalid bearer token")
+			return models.User{}, errors.New("Invalid bearer token")
 		}
 	}
 
-	if claims["github_team_slugs"] == nil {
-		util.WarningLogger.Printf("IP %s is not authorized", c.IP())
-		return models.GithubUser{}, errors.New("Invalid bearer token")
+	// check if user exists in database with ID
+	user, err := util.GetUserByID(uint(claims["id"].(float64)))
+	if err != nil {
+		return models.User{}, err
 	}
 
-	var githubTeamSlugs []string
-	for _, githubTeam := range claims["github_team_slugs"].([]interface{}) {
-		githubTeamSlugs = append(githubTeamSlugs, githubTeam.(string))
-	}
-
-	// return claims map as json
-
-	return models.GithubUser{
-		ID:                 claims["id"].(float64),
-		GithubTeamSlugs:    githubTeamSlugs,
-		Login:              claims["login"].(string),
-		Email:              claims["email"].(string),
-		Name:               claims["name"].(string),
-		AvatarURL:          claims["avatar_url"].(string),
-		GithubOrganization: claims["github_organization"].(string),
-		GithubAccessToken:  claims["github_access_token"].(string),
-		Is_Admin:           claims["is_admin"].(bool),
-	}, nil
+	return user, nil
 }

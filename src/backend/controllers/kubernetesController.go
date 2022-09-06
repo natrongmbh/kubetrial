@@ -3,15 +3,12 @@ package controllers
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/natrongmbh/kubetrial/k8s"
-	"github.com/natrongmbh/kubetrial/util"
 )
 
 func GetClusterInfo(c *fiber.Ctx) error {
 
-	util.InfoLogger.Printf("%s %s %s", c.IP(), c.Method(), c.Path())
-
-	githubUser, err := CheckAuth(c)
-	if githubUser.ID == 0 || err != nil {
+	user, err := CheckAuth(c)
+	if user.ID == 0 || err != nil {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 			"message": "Unauthorized",
 		})

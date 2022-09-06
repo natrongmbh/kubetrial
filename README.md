@@ -55,7 +55,13 @@
 
 ### It's a simple web app
 
-*tbd.*
+KubeTrial is a simple web application to create and manage trial deployments of your application.  
+It is mandatory to have a Helm chart for your applications to use KubeTrial.  
+You can define which Helm chart values should be editable by the `sales` user.  
+The `sales` user can create a trial deployment of your application and share the link with the customer.  
+While creating an application you can upload a default `values.yaml` file which overwrites some default values of your Helm chart.  
+Each trial deployment is created in a separate namespace with the prefix `kubetrial-`.  
+The `sales` user can delete the trial deployment at any time.  
 
 ### It's free
 
@@ -67,7 +73,7 @@ If you want to support us, you can buy us a beer with a Github Sponsorship or co
 Trust me, I'm open source.  
 You can find the source code on [Github](https://github.com/natrongmbh/kubetrial).  
 The frontend is written in Next.js and the backend in GoLang.  
-License: Apache 2.0
+License: GPL 3
 
 <h2></h2>
 <p>&nbsp;</p>
@@ -83,18 +89,24 @@ You can deploy kubetrial in your Kubernetes cluster, but you have to set all the
 
 #### Frontend
 
-- `ENV_GITHUB_CLIENT_ID` (required): Set the GitHub client ID.
-- `ENV_GITHUB_REDIRECT_URI` (required): Set the GitHub redirect URI. (e.g. `https://<url-from-frontend>`)
-- `ENV_GITHUB_OAUTH_URI` (required): Set the GitHub OAuth URI. (e.g. `https://<url-from-backend>/api/auth/github`)
+- `NEXT_API_URI` (required): The URI of the backend API.  
+  Default: *none*
+
 
 #### Backend
 
 - `CORS` (optional): Set CORS headers for the API.  
   Default: `*`
-- `JWT_SECRET_KEY` (optional): Set the JWT secret key.  
-  Default: random string of 32 characters.
-- `GITHUB_CALLBACK_URL` (optional): Set the callback URL for the GitHub OAuth.  
-  Default: `http://localhost:8000/auth/github/callback`
-- `GITHUB_CLIENT_ID` (required): Set the GitHub client ID.
-- `GITHUB_CLIENT_SECRET` (required): Set the GitHub client secret.
-- `GITHUB_ORGANIZATION` (required): Set the GitHub organization.
+- `JWT_SECRET_KEY` (optional): Set the JWT secret key.
+- `ADMIN_PASSWORD` (optional): Set the admin password.  
+  Default: `admin`
+- `DB_USERNAME` (optional): Set the database username.  
+  Default: `postgres`
+- `DB_PASSWORD` (optional): Set the database password.  
+  Default: `postgres`
+- `DB_NAME` (optional): Set the database name.  
+  Default: `postgres`
+- `DB_HOST` (optional): Set the database host.  
+  Default: `localhost`
+- `DB_PORT` (optional): Set the database port.  
+  Default: `5432`

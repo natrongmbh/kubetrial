@@ -1,114 +1,102 @@
 package util
 
 import (
-	"bytes"
-	"encoding/json"
-	"fmt"
-	"io/ioutil"
+	"errors"
 	"math/rand"
-	"net/http"
+
+	"golang.org/x/crypto/bcrypt"
+
+	"github.com/natrongmbh/kubetrial/database"
+	"github.com/natrongmbh/kubetrial/models"
 )
 
 var (
-	GITHUB_CLIENT_ID     string
-	GITHUB_CLIENT_SECRET string
-	letters              = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
-	JWT_SECRET_KEY       string
-	GITHUB_CALLBACK_URL  string
-	GITHUB_ORGANIZATION  string
+	letters        = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
+	JWT_SECRET_KEY string
 )
 
-// GetGithubAccessToken returns a github access token
-func GetGithubAccessToken(code string) string {
-	requestBodyMap := map[string]string{"client_id": GITHUB_CLIENT_ID, "client_secret": GITHUB_CLIENT_SECRET, "code": code}
-	requestJSON, _ := json.Marshal(requestBodyMap)
+func GetUserByID(id uint) (models.User, error) {
+	user := models.User{}
 
-	req, reqerr := http.NewRequest("POST", "https://github.com/login/oauth/access_token", bytes.NewBuffer(requestJSON))
-	if reqerr != nil {
-		ErrorLogger.Printf("Request creation failed: %s", reqerr)
+	err := database.DBConn.Where("id = ?", id).First(&user).Error
+	if err != nil {
+		return models.User{}, err
 	}
-
-	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Accept", "application/json")
-
-	resp, respErr := http.DefaultClient.Do(req)
-	if respErr != nil {
-		ErrorLogger.Printf("Request failed: %s", respErr)
-	}
-
-	respbody, _ := ioutil.ReadAll(resp.Body)
-
-	type GithubAccessTokenResponse struct {
-		AccessToken string `json:"access_token"`
-		TokenType   string `json:"token_type"`
-		Scope       string `json:"scope"`
-	}
-
-	var githubAccessTokenResponse GithubAccessTokenResponse
-	if err := json.Unmarshal(respbody, &githubAccessTokenResponse); err != nil {
-		ErrorLogger.Printf("Unmarshal failed: %s", err)
-	}
-
-	return githubAccessTokenResponse.AccessToken
+	return user, nil
 }
 
-// GetGithubData returns the github data
-func GetGithubData(accessToken string) string {
-	req, reqerr := http.NewRequest("GET", "https://api.github.com/user", nil)
-	if reqerr != nil {
-		ErrorLogger.Printf("Request creation failed: %s", reqerr)
+func GetUserByUsername(username string) (models.User, error) {
+
+	user := models.User{}
+
+	err := database.DBConn.Where("username = ?", username).First(&user).Error
+	if err != nil {
+		return models.User{}, err
 	}
-
-	authorizationHeaderValue := fmt.Sprintf("token %s", accessToken)
-	req.Header.Set("Authorization", authorizationHeaderValue)
-
-	resp, respErr := http.DefaultClient.Do(req)
-	if respErr != nil {
-		ErrorLogger.Printf("Request failed: %s", respErr)
-	}
-
-	respbody, _ := ioutil.ReadAll(resp.Body)
-
-	return string(respbody)
+	return user, nil
 }
 
-// GetGithubTeams returns the github teams
-func GetGithubTeams(accessToken string) string {
-	req, reqerr := http.NewRequest("GET", "https://api.github.com/orgs/"+GITHUB_ORGANIZATION+"/teams", nil)
-	if reqerr != nil {
-		ErrorLogger.Printf("Request creation failed: %s", reqerr)
+func CheckPasswordOfUser(password string, userId uint) error {
+
+	user, err := GetUserByID(userId)
+	if err != nil {
+		return err
 	}
-
-	authorizationHeaderValue := fmt.Sprintf("token %s", accessToken)
-	req.Header.Set("Authorization", authorizationHeaderValue)
-
-	resp, respErr := http.DefaultClient.Do(req)
-	if respErr != nil {
-		ErrorLogger.Printf("Request failed: %s", respErr)
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
+	if err != nil {
+		return errors.New("Invalid credentials")
 	}
-
-	respbody, _ := ioutil.ReadAll(resp.Body)
-
-	return string(respbody)
+	return nil
 }
 
-func GetGithubUser(accessToken string) string {
-	req, reqerr := http.NewRequest("GET", "https://api.github.com/user", nil)
-	if reqerr != nil {
-		ErrorLogger.Printf("Request creation failed: %s", reqerr)
+func CreateUser(user models.User) error {
+
+	if _, err := GetUserByUsername(user.Username); err != nil {
+
+		// if not, create user
+		password, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+		if err != nil {
+			return err
+		}
+		tempUser := models.User{
+			Username: user.Username,
+			Password: string(password),
+			Name:     user.Name,
+		}
+		if err = database.DBConn.Create(&tempUser).Error; err != nil {
+			return err
+		}
+
+		InfoLogger.Printf("Created user: %s", tempUser.Username)
+		return nil
+	} else {
+		return errors.New("User already exists")
+	}
+}
+
+func UpdateUser(user models.User) error {
+
+	password, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+	if err != nil {
+		return err
+	}
+	tempUser := models.User{
+		Username: user.Username,
+		Password: string(password),
+		Name:     user.Name,
 	}
 
-	authorizationHeaderValue := fmt.Sprintf("token %s", accessToken)
-	req.Header.Set("Authorization", authorizationHeaderValue)
-
-	resp, respErr := http.DefaultClient.Do(req)
-	if respErr != nil {
-		ErrorLogger.Printf("Request failed: %s", respErr)
+	var currentUser models.User
+	err = database.DBConn.Where("username = ?", user.Username).First(&currentUser).Error
+	if err != nil {
+		return err
+	}
+	tempUser.ID = currentUser.ID
+	if err = database.DBConn.Save(&tempUser).Error; err != nil {
+		return err
 	}
 
-	respbody, _ := ioutil.ReadAll(resp.Body)
-
-	return string(respbody)
+	return nil
 }
 
 // RandomStringBytes returns a random string of length n

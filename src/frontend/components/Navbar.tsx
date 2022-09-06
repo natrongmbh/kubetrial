@@ -1,6 +1,6 @@
 import { Fragment } from 'react'
 import { Disclosure, Menu, Transition } from '@headlessui/react'
-import { BeakerIcon, BellIcon, CodeIcon, DesktopComputerIcon, MenuIcon, StarIcon, TemplateIcon, XIcon } from '@heroicons/react/outline'
+import { BeakerIcon, BellIcon, CodeIcon, DesktopComputerIcon, MenuIcon, StarIcon, TemplateIcon, UserIcon, XIcon } from '@heroicons/react/outline'
 import { PlusSmIcon } from '@heroicons/react/solid'
 import { classNames } from '../lib/design'
 import { useUserContext } from '../contexts/userContext'
@@ -97,9 +97,9 @@ export default function Navbar() {
                                     {/* Profile dropdown */}
                                     <Menu as="div" className="ml-3 relative">
                                         <div>
-                                            <Menu.Button className="bg-gray-800 flex text-sm rounded-full ">
+                                            <Menu.Button className=" flex text-sm rounded-full ">
                                                 <span className="sr-only">Open user menu</span>
-                                                <img className="h-8 w-8 rounded-full" src={user.avatar_url} alt="" />
+                                                <UserIcon className="h-6 w-6" aria-hidden="true" />
                                             </Menu.Button>
                                         </div>
                                         <Transition
@@ -111,7 +111,7 @@ export default function Navbar() {
                                             leaveFrom="transform opacity-100 scale-100"
                                             leaveTo="transform opacity-0 scale-95"
                                         >
-                                            <Menu.Items className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
+                                            <Menu.Items className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg  bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
                                                 {userNavigation.map((item) => (
                                                     <Menu.Item key={item.name}>
                                                         {({ active }) => (
@@ -159,7 +159,7 @@ export default function Navbar() {
                                 </div>
                                 <div className="ml-3">
                                     <div className="text-base font-GilroyMedium text-black">{user.name}</div>
-                                    <div className="text-sm font-GilroyMedium text-gray-500">{user.email}</div>
+                                    {/* <div className="text-sm font-GilroyMedium text-gray-500">{user.email}</div> */}
                                 </div>
                             </div>
                             <div className="mt-3 px-2 space-y-1 sm:px-3">
