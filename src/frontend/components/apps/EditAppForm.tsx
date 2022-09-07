@@ -331,7 +331,7 @@ const EditAppForm = ({ app, setIsOpen }: any) => {
                             </h1>
                             <hr className="my-2 border-primary border-dashed rounded full border-2" />
                             <pre
-                                className="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0 bg-gray-200 rounded-lg p-2 overflow-x-scroll"
+                                className="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0 bg-gray-200 rounded-lg p-2 overflow-x- scrollbar-hide"
                             >
                                 {defaultPatchValuesString}
                             </pre>
@@ -378,31 +378,24 @@ const EditAppForm = ({ app, setIsOpen }: any) => {
 
 
             </div>
+            <hr className="border-gray-300" />
 
-            {
-                user?.group === "admin" && (
-                    <>
-                        <hr className="border-gray-300" />
-
-                        <div
-                            className=""
-                        >
-                            <Button
-                                buttonText="Delete"
-                                buttonType={ButtonType.Delete}
-                                onClick={handleDelete}
-                                widthString="float-left"
-                            />
-                            <Button
-                                buttonText="Save"
-                                buttonType={ButtonType.Primary}
-                                onClick={handleSave}
-                                widthString="float-right"
-                            />
-                        </div>
-                    </>
-                )
-            }
+            <div
+                className=""
+            >
+                <Button
+                    buttonText="Delete"
+                    buttonType={ButtonType.Delete}
+                    onClick={handleDelete}
+                    widthString="float-left"
+                />
+                <Button
+                    buttonText="Save"
+                    buttonType={ButtonType.Primary}
+                    onClick={handleSave}
+                    widthString="float-right"
+                />
+            </div>
 
 
         </div>

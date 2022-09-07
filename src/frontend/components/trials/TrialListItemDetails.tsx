@@ -104,7 +104,7 @@ const TrialListItemDetails = ({ trial, setIsOpen }: any) => {
                     <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:py-5 sm:px-6">
                         <dt className="text-sm font-medium text-gray-500">Default Helm Chart Values</dt>
                         {/* parse default_helm_chart_patch_values to yaml */}
-                        <pre className="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0 bg-gray-200 rounded-lg p-2 overflow-x-scroll">
+                        <pre className="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0 bg-gray-200 rounded-lg p-2 overflow-x-scroll scrollbar-hide">
                             {trial.app.default_helm_chart_patch_values}
                         </pre>
                     </div>

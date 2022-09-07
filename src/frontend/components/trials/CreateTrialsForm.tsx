@@ -7,13 +7,14 @@ import { Listbox, Transition } from '@headlessui/react'
 import { CheckIcon, SelectorIcon } from '@heroicons/react/solid'
 import { classNames } from "../../lib/design";
 import CreateTrialsFormValues from "./CreateTrialsFormValues";
+import Loading from "../Loading";
 
 const CreateTrialsForm = ({ setIsOpen }: any) => {
 
     const [apps, setApps] = useState<App[]>([]);
     const [selectedApp, setSelectedApp] = useState<App | undefined>(undefined);
 
-    const { reload }: any = useUserContext();
+    const { reload, componentLoading }: any = useUserContext();
 
     useEffect(() => {
         (
@@ -32,6 +33,9 @@ const CreateTrialsForm = ({ setIsOpen }: any) => {
 
     return (
         <div>
+
+            {componentLoading ? <Loading /> : null}
+
             <h1>Create Trials</h1>
             <Listbox value={selectedApp} onChange={setSelectedApp}>
                 {({ open }) => (

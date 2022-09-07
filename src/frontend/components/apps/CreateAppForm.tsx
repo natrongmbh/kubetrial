@@ -277,7 +277,7 @@ const CreateAppForm = ({ setIsOpen }: any) => {
                             </h1>
                             <hr className="my-2 border-primary border-dashed rounded full border-2" />
                             <pre
-                                className="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0 bg-gray-200 rounded-lg p-2 overflow-x-scroll"
+                                className="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0 bg-gray-200 rounded-lg p-2 overflow-x-scroll scrollbar-hide"
                             >
                                 {defaultPatchValuesString}
                             </pre>

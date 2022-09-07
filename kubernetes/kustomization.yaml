@@ -10,3 +10,4 @@ resources:
   - service-backend.yaml
   - deployment-frontend.yaml
   - deployment-backend.yaml
+  - kubetrial-secrets.yaml

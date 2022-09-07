@@ -19,12 +19,21 @@ spec:
             memory: "512Mi"
             cpu: "500m"
         env:
-          - name: ENV_GITHUB_CLIENT_ID
-            value: "" # requried
-          - name: ENV_GITHUB_REDIRECT_URI
-            value: "" # requried
-          - name: ENV_GITHUB_OAUTH_URI
+          - name: ENV_API_URI
             value: "" # requried
         ports:
         - containerPort: 3000
           name: http
+      initContainers:
+        - name: pg-isready
+          image: postgres
+          command: 
+          - 'sh'
+          - '-c'
+          - |
+            until pg_isready -h postgresql.kubetrial.svc.cluster.local -p 5432; do
+              echo "Waiting for PostgreSQL to be ready..."
+              sleep 2
+            done
+          - 'echo'
+          - 'PostgreSQL is ready'

@@ -36,16 +36,12 @@ const Apps = () => {
                     Apps depend on the Helm chart that you want to use. <br className="sm:block hidden" />
                     You can define which values to use for the Trial Form.
                 </p>
-                {
-                    user?.group == "admin" && (
-                        <Button
-                            buttonText="Create App"
-                            onClick={() => setIsOpen(true)}
-                            buttonType={ButtonType.PrimaryOutline}
-                            buttonIcon={<PlusIcon className="w-5 h-5" />}
-                        />
-                    )
-                }
+                <Button
+                    buttonText="Create App"
+                    onClick={() => setIsOpen(true)}
+                    buttonType={ButtonType.PrimaryOutline}
+                    buttonIcon={<PlusIcon className="w-5 h-5" />}
+                />
 
             </div>
 

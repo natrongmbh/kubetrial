@@ -1,0 +1,9 @@
+global:
+  postgresql:
+    auth:
+      username: safir
+      database: safir
+      existingSecret: kubetrial-secrets
+      secretKeys:
+        adminPasswordKey: DB_PASSWORD
+        userPasswordKey: DB_PASSWORD

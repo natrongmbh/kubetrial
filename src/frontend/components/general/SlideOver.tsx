@@ -16,7 +16,7 @@ const SlideOver = ({ children, title, description, isOpen, setIsOpen }: any) => 
 
     return (
         <Transition.Root show={open} as={Fragment}>
-            <Dialog as="div" className="relative z-50" onClose={setIsOpen}>
+            <Dialog as="div" className="relative z-30" onClose={setIsOpen}>
                 <Transition.Child
                     as={Fragment}
                     enter="transform transition ease-in-out duration-300 sm:duration-500"
@@ -68,7 +68,7 @@ const SlideOver = ({ children, title, description, isOpen, setIsOpen }: any) => 
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className="relative overflow-y-scroll flex-1 px-4 sm:px-6">
+                                        <div className="relative overflow-y-scroll scrollbar-hide flex-1 px-4 sm:px-6">
                                             <div className="absolute inset-0 px-4 py-5 sm:px-6">
                                                 {children}
                                             </div>

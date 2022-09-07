@@ -6,6 +6,7 @@ import { AlertType, DefaultAlertMessage } from "../alerts/Alerts";
 import { App } from "../apps/AppsList";
 import Button, { ButtonType } from "../general/Button";
 import InputWithLeadingIcon from "../general/form/InputWithLeadingIcon";
+import Loading from "../Loading";
 import { TrialPatchValue } from "./TrialsList";
 
 const CreateTrialsFormValues = ({ app, setIsOpen }: any) => {
@@ -20,7 +21,9 @@ const CreateTrialsFormValues = ({ app, setIsOpen }: any) => {
     const [name, setName] = useState("");
     const [description, setDescription] = useState("");
 
-    const { setReload, reload }: any = useUserContext();
+    const { setReload, reload, componentLoading, setComponentLoading }: any = useUserContext();
+
+    const [loading, setLoading] = useState(false);
 
     // parse app.helm_chart_patch_values to array of HelmPatchValue objects
     let helm_chart_patch_values: any[] = [];
@@ -43,9 +46,11 @@ const CreateTrialsFormValues = ({ app, setIsOpen }: any) => {
     }
 
     const handleSave = () => {
+        setComponentLoading(true);
 
         if (name === "" || description === "" || trialPatchValues.length === 0) {
             DefaultAlertMessage("Error", "Please fill out all fields", AlertType.Error);
+            setComponentLoading(false);
             return;
         }
 
@@ -61,12 +66,14 @@ const CreateTrialsFormValues = ({ app, setIsOpen }: any) => {
             .then((response) => {
                 DefaultAlertMessage("Success", "Trial created successfully", AlertType.Success);
                 console.log(response);
-                setReload(!reload);
-                setIsOpen(false);
             })
             .catch((error) => {
                 DefaultAlertMessage("Error", error.response.data.error, AlertType.Error);
                 console.log(error);
+            }).finally(() => {
+                setComponentLoading(false);
+                setReload(!reload);
+                setIsOpen(false);
             });
 
     }

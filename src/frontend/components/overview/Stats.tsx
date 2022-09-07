@@ -1,4 +1,4 @@
-import { ArrowSmDownIcon, ArrowSmRightIcon, ArrowSmUpIcon, BeakerIcon, CodeIcon } from '@heroicons/react/solid'
+import { ArrowSmDownIcon, ArrowSmRightIcon, ArrowSmUpIcon, BeakerIcon, CodeIcon } from '@heroicons/react/outline'
 import { classNames } from '../../lib/design'
 import { useEffect, useState } from 'react'
 import { useUserContext } from '../../contexts/userContext'
@@ -16,6 +16,7 @@ export interface Stats {
     name: string;
     stat: string;
     icon: any;
+    link: string;
     change: string;
     changeType: ChangeType;
 }
@@ -28,11 +29,11 @@ enum ChangeType {
 
 const Stats = () => {
 
-    const [statsResponse, setStatsResponse] = useState<Stat>({ 
+    const [statsResponse, setStatsResponse] = useState<Stat>({
         total_app_count: 0,
-        app_count_last_30_days: 0, 
+        app_count_last_30_days: 0,
         total_trial_count: 0,
-        trial_count_last_30_days: 0 
+        trial_count_last_30_days: 0
     })
     const [stats, setStats] = useState<Stats[]>([])
 
@@ -51,6 +52,7 @@ const Stats = () => {
                                 name: 'Total Trials',
                                 stat: data.total_trial_count.toString(),
                                 icon: BeakerIcon,
+                                link: '/trials',
                                 change: (data.trial_count_last_30_days).toString(),
                                 changeType: data.trial_count_last_30_days === 0 ? ChangeType.None : data.trial_count_last_30_days > 0 ? ChangeType.Increase : ChangeType.Decrease
                             },
@@ -59,6 +61,7 @@ const Stats = () => {
                                 name: 'Total Apps',
                                 stat: data.total_app_count.toString(),
                                 icon: CodeIcon,
+                                link: '/apps',
                                 change: (data.app_count_last_30_days).toString(),
                                 changeType: data.app_count_last_30_days === 0 ? ChangeType.None : data.app_count_last_30_days > 0 ? ChangeType.Increase : ChangeType.Decrease
                             },
@@ -77,10 +80,7 @@ const Stats = () => {
 
             <dl className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-2">
                 {stats.map((item) => (
-                    <div
-                        key={item.id}
-                        className="relative bg-white pt-5 px-4 sm:pt-6 sm:px-6 shadow rounded-lg overflow-hidden"
-                    >
+                    <a href={item.link} key={item.id} className="relative bg-white hover:bg-gray-50 transition-all duration-150 ease-in-out pt-5 px-4 sm:pt-6 sm:px-6 shadow rounded-lg overflow-hidden">
                         <dt>
                             <div className="absolute bg-primary rounded-md p-3">
                                 <item.icon className="h-6 w-6 text-white" aria-hidden="true" />
@@ -97,20 +97,20 @@ const Stats = () => {
                             >
                                 {item.changeType === 'increase' ? (
                                     <ArrowSmUpIcon className="self-center flex-shrink-0 h-5 w-5 text-green-500" aria-hidden="true" />
-                                ) : 
-                                item.changeType === 'decrease' ?
-                                (
-                                    <ArrowSmDownIcon className="self-center flex-shrink-0 h-5 w-5 text-red-500" aria-hidden="true" />
-                                ): (
-                                    <ArrowSmRightIcon className="self-center flex-shrink-0 h-5 w-5 text-gray-500" aria-hidden="true" />
-                                )    
+                                ) :
+                                    item.changeType === 'decrease' ?
+                                        (
+                                            <ArrowSmDownIcon className="self-center flex-shrink-0 h-5 w-5 text-red-500" aria-hidden="true" />
+                                        ) : (
+                                            <ArrowSmRightIcon className="self-center flex-shrink-0 h-5 w-5 text-gray-500" aria-hidden="true" />
+                                        )
                                 }
 
                                 <span className="sr-only">{item.changeType === 'increase' ? 'Increased' : 'Decreased'} by</span>
                                 {item.change}
                             </p>
                         </dd>
-                    </div>
+                    </a>
                 ))}
             </dl>
         </div>

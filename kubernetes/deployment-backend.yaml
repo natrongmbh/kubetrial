@@ -22,14 +22,9 @@ spec:
         env:
           - name: CORS
             value: "*"
-          - name: JWT_SECRET
-            value: ""
-          - name: GITHUB_CLIENT_ID
-            value: ""
-          - name: GITHUB_CLIENT_SECRET
-            value: ""
-          - name: GITHUB_ORGANIZATION
-            value: ""
+        envFrom:
+          - secretRef:
+              name: kubetrial-secrets
         ports:
         - containerPort: 8000
           name: http

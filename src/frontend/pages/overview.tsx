@@ -24,12 +24,12 @@ const Dashboard: NextPage = () => {
                 className="grid sm:grid-cols-2 gap-4"
             >
                 <div
-                    className="w-full col-span-2"
+                    className="sm:max-w-3xl w-full mx-auto col-span-2"
                 >
                     <Stats />
                 </div>
                 <div
-                    className="w-full col-span-2"
+                    className="sm:max-w-3xl w-full mx-auto col-span-2"
                 >
                     <ClusterInfo />
                 </div>
