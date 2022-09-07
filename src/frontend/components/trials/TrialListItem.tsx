@@ -1,4 +1,4 @@
-import { CheckCircleIcon, InformationCircleIcon, XCircleIcon } from "@heroicons/react/outline";
+import { CheckCircleIcon, InformationCircleIcon, LinkIcon, XCircleIcon } from "@heroicons/react/outline";
 import { DotsVerticalIcon } from "@heroicons/react/solid"
 import { useState } from "react";
 import { classNames } from "../../lib/design"
@@ -58,11 +58,12 @@ const TrialListItem = ({ trial }: any) => {
                     <p className="text-gray-500">{trial.description}</p>
                     <p className="text-gray-500">{parseDate(trial.CreatedAt)}</p>
                     <p className="text-primary">
+                        <LinkIcon className="h-4 w-4 inline" aria-hidden="true" />
                         {Array.from(trial.trial_patch_values).map((patchValue: any, index: number) => (
                             // if patchValue.value contains one or more dots and more than 6 chars it's a url
                             patchValue.value && patchValue.value.includes('.') && patchValue.value.length > 5 ? (
                                 // add , but not on last element
-                                <span key={index} className="">{patchValue.value}{index < trial.trial_patch_values.length - 1 ? ', ' : ''}</span>
+                                <a key={index} className="" href={"https://" + patchValue.value} target="_blanc">{patchValue.value}{index < trial.trial_patch_values.length - 1 ? ', ' : ''}</a>
                             ) : null
                         ))}
                     </p>

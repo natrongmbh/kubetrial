@@ -1,6 +1,8 @@
 package controllers
 
 import (
+	"errors"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/natrongmbh/kubetrial/database"
 	"github.com/natrongmbh/kubetrial/helm"
@@ -140,7 +142,7 @@ func CreateTrial(c *fiber.Ctx) error {
 func GetTrials(c *fiber.Ctx) error {
 
 	user, err := CheckAuth(c)
-	if user.ID == 0 || err != nil {
+	if user.ID == 0 || user.Group == models.Customer || err != nil {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 			"message": "Unauthorized",
 		})
@@ -159,20 +161,20 @@ func GetTrials(c *fiber.Ctx) error {
 		// create helm client
 		helmClient, err := helm.CreateHelmClient(helm.GetNamespaceName(trial.Name))
 		if err != nil {
-			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-				"message": "Error creating helm client",
-			})
+			trials[i].Status = "error"
 		}
 
 		// get helm release
 		release, err := helm.GetHelmRelease(helmClient, trial.App.HelmChartName)
 		if err != nil {
-			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-				"message": "Error getting helm release",
-			})
+			trials[i].Status = "error"
 		}
 
-		trials[i].Status = release.Info.Status.String()
+		if release != nil {
+			trials[i].Status = release.Info.Status.String()
+		} else {
+			trials[i].Status = "error"
+		}
 	}
 
 	// sort trials by app
@@ -198,7 +200,7 @@ func UpdateTrial(c *fiber.Ctx) error {
 
 func DeleteTrial(c *fiber.Ctx) error {
 	user, err := CheckAuth(c)
-	if user.ID == 0 || err != nil {
+	if user.ID == 0 || user.Group == models.Customer || err != nil {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 			"message": "Unauthorized",
 		})
@@ -206,33 +208,28 @@ func DeleteTrial(c *fiber.Ctx) error {
 
 	// delete trial and trial patch values from database
 	trial := models.Trial{}
+	var sumerr error
+	sumerr = errors.New("")
 	// by id
 	if err := database.DBConn.Where("id = ?", c.Params("id")).First(&trial).Error; err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"message": "Error getting trial",
-		})
+		sumerr = err
 	}
 
 	if err := database.DBConn.Where("trial_id = ?", trial.ID).Delete(&models.TrialPatchValue{}).Error; err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"message": "Error deleting trial patch values",
-		})
+		sumerr = err
 	}
 
 	if err := database.DBConn.Delete(&trial).Error; err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"message": "Error deleting trial",
-		})
+		sumerr = err
 	}
 
 	// delete namespace
 	if err := k8s.DeleteNamespace(helm.GetNamespaceName(trial.Name)); err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"message": "Error deleting namespace",
-		})
+		sumerr = err
 	}
 
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"message": "Trial deleted",
+		"error":   sumerr.Error(),
 	})
 }

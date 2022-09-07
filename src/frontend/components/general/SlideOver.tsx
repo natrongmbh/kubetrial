@@ -45,7 +45,7 @@ const SlideOver = ({ children, title, description, isOpen, setIsOpen }: any) => 
                                 leaveFrom="translate-x-0"
                                 leaveTo="translate-x-full"
                             >
-                                <Dialog.Panel className="pointer-events-auto w-screen max-w-2xl">
+                                <Dialog.Panel className="pointer-events-auto w-screen max-w-3xl">
                                     <div className="flex h-full flex-col bg-white shadow-xl rounded-tl-xl">
                                         {/* Header */}
                                         <div className=" bg-gradient-to-r from-primary to-primary-dark rounded-tl-xl px-4 py-6 sm:px-6 shadow-lg">

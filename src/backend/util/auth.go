@@ -49,6 +49,26 @@ func CheckPasswordOfUser(password string, userId uint) error {
 	return nil
 }
 
+func UpdatePasswordOfUser(password string, userId uint) error {
+
+	user, err := GetUserByID(userId)
+	if err != nil {
+		return err
+	}
+
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		return err
+	}
+	user.Password = string(hashedPassword)
+
+	if err = database.DBConn.Save(&user).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func CreateUser(user models.User) error {
 
 	if _, err := GetUserByUsername(user.Username); err != nil {
@@ -62,6 +82,7 @@ func CreateUser(user models.User) error {
 			Username: user.Username,
 			Password: string(password),
 			Name:     user.Name,
+			Group:    user.Group,
 		}
 		if err = database.DBConn.Create(&tempUser).Error; err != nil {
 			return err
@@ -84,6 +105,7 @@ func UpdateUser(user models.User) error {
 		Username: user.Username,
 		Password: string(password),
 		Name:     user.Name,
+		Group:    user.Group,
 	}
 
 	var currentUser models.User

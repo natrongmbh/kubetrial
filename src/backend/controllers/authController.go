@@ -38,6 +38,7 @@ func Login(c *fiber.Ctx) error {
 		"id":       user.ID,
 		"username": user.Username,
 		"name":     user.Name,
+		"group":    user.Group,
 		"exp":      time.Now().Add(time.Hour * 24).Unix(),
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
@@ -51,6 +52,91 @@ func Login(c *fiber.Ctx) error {
 	})
 }
 
+func Register(c *fiber.Ctx) error {
+	// only a user with admin group can register a new user
+	user, err := CheckAuth(c)
+	if err != nil {
+		return err
+	}
+
+	if user.Group != models.Admin {
+		return errors.New("You are not authorized to register a new user")
+	}
+
+	var data struct {
+		Username string `json:"username"`
+		Password string `json:"password"`
+		Name     string `json:"name"`
+		Group    string `json:"group"`
+	}
+
+	if err := c.BodyParser(&data); err != nil {
+		c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "Invalid request",
+		})
+		return err
+	}
+
+	// check if username already exists
+	_, err = util.GetUserByUsername(data.Username)
+	if err == nil {
+		return errors.New("Username already exists")
+	}
+
+	// check if group is valid
+	if data.Group != models.Admin && data.Group != models.Sales && data.Group != models.Customer {
+		return errors.New("Invalid group")
+	}
+
+	// create new user
+	user = models.User{
+		Username: data.Username,
+		Name:     data.Name,
+		Group:    data.Group,
+		Password: data.Password,
+	}
+
+	// save user to database
+	if err := util.CreateUser(user); err != nil {
+		return err
+	}
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"message": "User created successfully",
+	})
+}
+
+func UpdatePassword(c *fiber.Ctx) error {
+	user, err := CheckAuth(c)
+	if err != nil {
+		return err
+	}
+
+	var data struct {
+		OldPassword string `json:"oldPassword"`
+		NewPassword string `json:"newPassword"`
+	}
+
+	if err := c.BodyParser(&data); err != nil {
+		c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "Invalid request",
+		})
+		return err
+	}
+
+	if err := util.CheckPasswordOfUser(data.OldPassword, user.ID); err != nil {
+		return err
+	}
+
+	if err := util.UpdatePasswordOfUser(data.NewPassword, user.ID); err != nil {
+		return err
+	}
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"message": "Password updated successfully",
+	})
+}
+
 func CheckLogin(c *fiber.Ctx) error {
 
 	user, err := CheckAuth(c)
@@ -61,6 +147,7 @@ func CheckLogin(c *fiber.Ctx) error {
 	smallUser := models.User{
 		Username: user.Username,
 		Name:     user.Name,
+		Group:    user.Group,
 	}
 
 	return c.Status(fiber.StatusOK).JSON(smallUser)

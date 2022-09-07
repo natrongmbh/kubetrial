@@ -31,6 +31,7 @@ func LoadEnv() error {
 		Username: "admin",
 		Password: ADMIN_PASSWORD,
 		Name:     "Admin",
+		Group:    models.Admin,
 	}
 
 	if err = CreateUser(adminUser); err != nil && err.Error() != "User already exists" {

@@ -19,3 +19,14 @@ type TrialPatchValue struct {
 	HelmChartPatchValueID uint   `json:"helm_chart_patch_value_id"`
 	TrialID               uint   `json:"trial_id"`
 }
+
+type TrialCode struct {
+	gorm.Model
+	Code    string `json:"code"`
+	App     App    `json:"app"`
+	AppID   uint   `json:"app_id"`
+	User    User   `json:"user"`
+	UserID  uint   `json:"user_id"`
+	Trial   Trial  `json:"trial"`
+	TrialID uint   `json:"trial_id"`
+}

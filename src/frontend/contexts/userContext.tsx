@@ -11,6 +11,7 @@ export interface User {
     ID: number;
     Username: string;
     Name: string;
+    Group: string;
 }
 
 export const useUserContext = () => {

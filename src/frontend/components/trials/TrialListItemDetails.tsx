@@ -23,13 +23,18 @@ const TrialListItemDetails = ({ trial, setIsOpen }: any) => {
         Api.delete("/trials/" + trialId)
             .then((res) => {
                 if (res.status === 200) {
+                    console.log(res.data);
                     DefaultAlertMessage("success", "Trial deleted successfully", AlertType.Success);
+                    if (res.data.error != "") {
+                        DefaultAlertMessage("Trial deleted!", res.data.error, AlertType.Warning);
+                    }
                 }
                 setReload(!reload);
                 setIsOpen(false);
             })
             .catch((err) => {
-                DefaultAlertMessage("error", "Trial could not be deleted", AlertType.Error);
+                DefaultAlertMessage("error", "Cannot delete trial", AlertType.Error);
+                console.log(err);
             })
     }
 
@@ -99,7 +104,9 @@ const TrialListItemDetails = ({ trial, setIsOpen }: any) => {
                     <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:py-5 sm:px-6">
                         <dt className="text-sm font-medium text-gray-500">Default Helm Chart Values</dt>
                         {/* parse default_helm_chart_patch_values to yaml */}
-                        <pre className="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0 bg-gray-200 rounded-lg p-2">{trial.app.default_helm_chart_patch_values}</pre>
+                        <pre className="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0 bg-gray-200 rounded-lg p-2 overflow-x-scroll">
+                            {trial.app.default_helm_chart_patch_values}
+                        </pre>
                     </div>
                 </dl>
             </div>

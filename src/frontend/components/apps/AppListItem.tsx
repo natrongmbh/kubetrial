@@ -1,5 +1,6 @@
 import { ArchiveIcon, LinkIcon, PencilAltIcon, PencilIcon, TagIcon, TrashIcon } from "@heroicons/react/solid";
 import { useState } from "react";
+import { useUserContext } from "../../contexts/userContext";
 import SlideOver from "../general/SlideOver";
 import { App } from "./AppsList";
 import EditAppForm from "./EditAppForm";
@@ -7,6 +8,8 @@ import EditAppForm from "./EditAppForm";
 const AppListItem = ({ app }: any) => {
 
     const [isOpen, setIsOpen] = useState(false);
+
+    const { user }: any = useUserContext();
 
     // cast app to App type
     let appData: App
@@ -72,11 +75,18 @@ const AppListItem = ({ app }: any) => {
                             </div>
                         </div>
                     </div>
-                    <div>
-                        <PencilIcon
-                            className="h-5 w-5 text-gray-400 group-hover:text-gray-500 transition-all duration-150 ease-in-out" aria-hidden="true"
-                        />
-                    </div>
+
+                    {
+                        user.group === "admin" && (
+
+                            <div>
+                                <PencilIcon
+                                    className="h-5 w-5 text-gray-400 group-hover:text-gray-500 transition-all duration-150 ease-in-out" aria-hidden="true"
+                                />
+                            </div>
+
+                        )
+                    }
                 </div>
             </div>
         </div>
