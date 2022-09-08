@@ -24,16 +24,3 @@ spec:
         ports:
         - containerPort: 3000
           name: http
-      initContainers:
-        - name: pg-isready
-          image: postgres
-          command: 
-          - 'sh'
-          - '-c'
-          - |
-            until pg_isready -h postgresql.kubetrial.svc.cluster.local -p 5432; do
-              echo "Waiting for PostgreSQL to be ready..."
-              sleep 2
-            done
-          - 'echo'
-          - 'PostgreSQL is ready'
