@@ -77,7 +77,7 @@ const AppListItem = ({ app }: any) => {
                     </div>
 
                     {
-                        user.group === "admin" && (
+                        user?.group === "admin" && (
 
                             <div>
                                 <PencilIcon
