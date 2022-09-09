@@ -78,12 +78,14 @@ const TrialListItem = ({ trial }: any) => {
                     <p className="text-gray-500">{parseDate(trial.CreatedAt)}</p>
                     <p className="text-gray-500 font-GilroyMedium">{trial.app.name}:{trial.app.helm_chart_version}</p>
                     <p className="text-primary">
-                        <ExternalLinkIcon className="h-5 w-5 inline" aria-hidden="true" />&nbsp;
+
                         {Array.from(trial.trial_patch_values).map((patchValue: any, index: number) => (
                             // if patchValue.value contains one or more dots and more than 6 chars it's a url
                             patchValue.value && patchValue.value.includes('.') && patchValue.value.length > 5 ? (
                                 // add , but not on last element
-                                <a key={index} className="" href={"https://" + patchValue.value} target="_blanc">{patchValue.value}{index < trial.trial_patch_values.length - 1 ? ', ' : ''}</a>
+                                <a key={index} className="" href={"https://" + patchValue.value} target="_blanc">
+                                    <ExternalLinkIcon className="h-5 w-5 inline" aria-hidden="true" /> {patchValue.value}{index < trial.trial_patch_values.length - 1 ? ', ' : ''}
+                                </a>
                             ) : null
                         ))}
                     </p>

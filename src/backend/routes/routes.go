@@ -17,7 +17,6 @@ func Setup(app *fiber.App) {
 
 	// Overview
 	v1.Get("/stats", controllers.GetStats)
-	v1.Get("/clusterinfo", controllers.GetClusterInfo)
 
 	// App
 	v1.Get("/apps", controllers.GetApps)

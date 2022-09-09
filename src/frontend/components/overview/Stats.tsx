@@ -1,4 +1,4 @@
-import { ArrowSmDownIcon, ArrowSmRightIcon, ArrowSmUpIcon, BeakerIcon, CodeIcon } from '@heroicons/react/outline'
+import { ArrowSmDownIcon, ArrowSmRightIcon, ArrowSmUpIcon, BeakerIcon, CodeIcon, CubeIcon, CubeTransparentIcon, TagIcon } from '@heroicons/react/outline'
 import { classNames } from '../../lib/design'
 import { useEffect, useState } from 'react'
 import { useUserContext } from '../../contexts/userContext'
@@ -36,6 +36,7 @@ const Stats = () => {
         trial_count_last_30_days: 0
     })
     const [stats, setStats] = useState<Stats[]>([])
+    const [clusterStats, setClusterStats] = useState<Stats[]>([])
 
     const { reload }: any = useUserContext();
 
@@ -49,7 +50,7 @@ const Stats = () => {
                         setStats([
                             {
                                 id: 1,
-                                name: 'Total Trials',
+                                name: 'Total Trials (inkl. deleted)',
                                 stat: data.total_trial_count.toString(),
                                 icon: BeakerIcon,
                                 link: '/trials',
@@ -58,13 +59,42 @@ const Stats = () => {
                             },
                             {
                                 id: 2,
-                                name: 'Total Apps',
+                                name: 'Total Apps (inkl. deleted)',
                                 stat: data.total_app_count.toString(),
                                 icon: CodeIcon,
                                 link: '/apps',
                                 change: (data.app_count_last_30_days).toString(),
                                 changeType: data.app_count_last_30_days === 0 ? ChangeType.None : data.app_count_last_30_days > 0 ? ChangeType.Increase : ChangeType.Decrease
                             },
+                        ])
+                        setClusterStats([
+                            {
+                                id: 3,
+                                name: 'Trial Namespaces',
+                                stat: data.trial_namespaces.toString(),
+                                icon: CubeTransparentIcon,
+                                link: '/trials',
+                                change: '0',
+                                changeType: ChangeType.None
+                            },
+                            {
+                                id: 4,
+                                name: 'Trial Pods',
+                                stat: data.trial_pods.toString(),
+                                icon: CubeIcon,
+                                link: '/trials',
+                                change: '0',
+                                changeType: ChangeType.None
+                            },
+                            {
+                                id: 5,
+                                name: 'Cluster Version',
+                                stat: data.cluster_version.toString(),
+                                icon: TagIcon,
+                                link: '/trials',
+                                change: '0',
+                                changeType: ChangeType.None
+                            }
                         ])
                     }
                 } catch (error) {
@@ -111,6 +141,31 @@ const Stats = () => {
                             </p>
                         </dd>
                     </a>
+                ))}
+            </dl>
+
+            <h3 className="text-lg leading-6 mt-5 font-medium text-gray-900">Kubernetes Cluster</h3>
+
+            <dl className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-3 lg:grid-cols-3">
+                {clusterStats.map((item) => (
+                    <div key={item.id} className="relative bg-white sm:hover:-translate-y-2 transition-all duration-150 ease-in-out pt-5 px-4 sm:pt-6 sm:px-6 shadow rounded-lg overflow-hidden">
+                        <dt>
+                            <div className="absolute bg-primary rounded-md p-3">
+                                <item.icon className="h-6 w-6 text-white" aria-hidden="true" />
+                            </div>
+                            <p className="ml-16 text-sm font-medium text-gray-500 truncate">{item.name}</p>
+                        </dt>
+                        <dd className="ml-16 pb-6 flex items-baseline sm:pb-7">
+                            <p className="text-2xl font-semibold text-gray-900">{item.stat}</p>
+                            <p
+                                className={classNames(
+                                    item.changeType === 'increase' ? 'text-green-600' : item.changeType === 'decrease' ? 'text-red-600' : 'text-gray-500',
+                                    'ml-2 flex items-baseline text-sm font-semibold'
+                                )}
+                            >
+                            </p>
+                        </dd>
+                    </div>
                 ))}
             </dl>
         </div>

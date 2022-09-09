@@ -63,13 +63,15 @@ const TrialListItemDetails = ({ trial, setIsOpen }: any) => {
                     </div>
                     <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:py-5 sm:px-6">
                         <dt className="text-sm font-medium text-gray-500">Potential URL Values</dt>
-                        <dd>
+                        <dd className="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">
                             {Array.from(trial.trial_patch_values).map((patchValue: any, index: number) => (
                                 // if patchValue.value contains one or more dots and more than 6 chars it's a url
                                 patchValue.value && patchValue.value.includes('.') && patchValue.value.length > 5 ? (
                                     // add , but not on last element
                                     <span key={index} className="">{patchValue.value}{index < trial.trial_patch_values.length - 1 ? ', ' : ''}</span>
-                                ) : null
+                                ) : (
+                                    <span className="italic">*No potential URL found</span>
+                                )
 
                             ))}
                         </dd>
@@ -101,13 +103,16 @@ const TrialListItemDetails = ({ trial, setIsOpen }: any) => {
                         <dt className="text-sm font-medium text-gray-500">Helm Chart Version</dt>
                         <dd className="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">{trial.app.helm_chart_version}</dd>
                     </div>
-                    <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:py-5 sm:px-6">
-                        <dt className="text-sm font-medium text-gray-500">Default Helm Chart Values</dt>
-                        {/* parse default_helm_chart_patch_values to yaml */}
-                        <pre className="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0 bg-gray-200 rounded-lg p-2 overflow-x-scroll scrollbar-hide">
-                            {trial.app.default_helm_chart_patch_values}
-                        </pre>
-                    </div>
+                    {trial.app.default_helm_chart_patch_values ? (
+                        <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:py-5 sm:px-6">
+                            <dt className="text-sm font-medium text-gray-500">Default Helm Chart Values</dt>
+                            {/* parse default_helm_chart_patch_values to yaml */}
+                            <pre className="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0 bg-gray-200 rounded-lg p-2 overflow-x-scroll scrollbar-hide">
+                                {trial.app.default_helm_chart_patch_values}
+                            </pre>
+                        </div>
+                    ) : null
+                    }
                 </dl>
             </div>
             <hr className="my-4 " />
