@@ -17,6 +17,8 @@ const TrialListItemDetails = ({ trial, setIsOpen }: any) => {
         return `${day}/${month}/${year}`;
     }
 
+    console.log(trial);
+
     const { setReload, reload }: any = useUserContext();
 
     const deleteTrial = (trialId: string) => {
@@ -66,14 +68,16 @@ const TrialListItemDetails = ({ trial, setIsOpen }: any) => {
                         <dd className="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">
                             {Array.from(trial.trial_patch_values).map((patchValue: any, index: number) => (
                                 // if patchValue.value contains one or more dots and more than 6 chars it's a url
-                                patchValue.value && patchValue.value.includes('.') && patchValue.value.length > 5 ? (
+                                patchValue.value && patchValue.value.includes('.') && patchValue.value.length > 5 && (
                                     // add , but not on last element
                                     <span key={index} className="">{patchValue.value}{index < trial.trial_patch_values.length - 1 ? ', ' : ''}</span>
-                                ) : (
-                                    <span className="italic">*No potential URL found</span>
                                 )
-
                             ))}
+                            {
+                                trial.trial_patch_values.length === 0 && (
+                                    <span className="text-gray-400 italic">No potential URL values</span>
+                                )
+                            }
                         </dd>
                     </div>
                 </dl>

@@ -12,6 +12,7 @@ var (
 	err            error
 	CORS           string
 	ADMIN_PASSWORD string
+	SALES_PASSWORD string
 )
 
 // LoadEnv loads OS environment variables
@@ -27,11 +28,23 @@ func LoadEnv() error {
 		ADMIN_PASSWORD = "admin"
 	}
 
+	if SALES_PASSWORD = os.Getenv("SALES_PASSWORD"); SALES_PASSWORD == "" {
+		InfoLogger.Println("SALES_PASSWORD not set, defaulting to 'sales'")
+		SALES_PASSWORD = "sales"
+	}
+
 	adminUser := models.User{
 		Username: "admin",
 		Password: ADMIN_PASSWORD,
 		Name:     "Admin",
 		Group:    models.Admin,
+	}
+
+	salesUser := models.User{
+		Username: "sales",
+		Password: SALES_PASSWORD,
+		Name:     "Sales",
+		Group:    models.Sales,
 	}
 
 	if err = CreateUser(adminUser); err != nil && err.Error() != "User already exists" {
@@ -49,6 +62,24 @@ func LoadEnv() error {
 			// update password
 			UpdateUser(adminUser)
 			InfoLogger.Println("Updated password for user: admin")
+		}
+	}
+
+	if err = CreateUser(salesUser); err != nil && err.Error() != "User already exists" {
+		return err
+	} else {
+		// check if current password is SALES_PASSWORD
+		var user models.User
+		err = database.DBConn.Where("username = ?", salesUser.Username).First(&user).Error
+		if err != nil {
+			return err
+		}
+		// decrypt password
+		err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(salesUser.Password))
+		if err != nil {
+			// update password
+			UpdateUser(salesUser)
+			InfoLogger.Println("Updated password for user: sales")
 		}
 	}
 

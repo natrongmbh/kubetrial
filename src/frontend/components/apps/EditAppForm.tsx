@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import Api from "../../config/Api";
 import { useUserContext } from "../../contexts/userContext";
+import { classNames } from "../../lib/design";
 import { GithubIcon, GitIcon } from "../../lib/Icons";
 import { AlertType, DefaultAlert, DefaultAlertMessage } from "../alerts/Alerts";
 import Button, { ButtonType } from "../general/Button";
@@ -142,6 +143,10 @@ const EditAppForm = ({ app, setIsOpen }: any) => {
         })
     }
 
+    const handleTrialCode = () => {
+        console.log("trial code")
+    }
+
     return (
         <div
             className="grid grid-cols-1 gap-4 pb-5"
@@ -190,7 +195,6 @@ const EditAppForm = ({ app, setIsOpen }: any) => {
                 value={appHelmChartVersion}
                 onChange={(e: any) => setAppHelmChartVersion(e.target.value)}
             />
-
             <div>
 
                 <h1
@@ -205,38 +209,41 @@ const EditAppForm = ({ app, setIsOpen }: any) => {
                     These values will be shown when creating a new trial of this app.
                 </p>
 
-                <div
-                    className="grid grid-cols-1 sm:grid-cols-3 gap-4 "
-                >
-                    <InputWithLeadingIcon
-                        labelName="Value Name"
-                        inputType="text"
-                        inputName="value-name"
-                        leadingIcon={<DocumentTextIcon className="w-5 h-5" />}
-                        placeholder="App Password"
-                        onChange={(e: any) => setValueName(e.target.value)}
-                        value={valueName}
-                    />
-                    <InputWithLeadingIcon
-                        labelName="Value String"
-                        inputType="text"
-                        inputName="value-string"
-                        leadingIcon={<KeyIcon className="w-5 h-5" />}
-                        placeholder="global.auth.password"
-                        onChange={(e: any) => setValueString(e.target.value)}
-                        value={valueString}
-                    />
+                {user?.group === "admin" && (
+
                     <div
-                        className="flex justify-center"
+                        className="grid grid-cols-1 sm:grid-cols-3 gap-4 "
                     >
-                        <button
-                            className="text-primary hover:text-primary-dark block"
-                            onClick={handleAddValue}
+                        <InputWithLeadingIcon
+                            labelName="Value Name"
+                            inputType="text"
+                            inputName="value-name"
+                            leadingIcon={<DocumentTextIcon className="w-5 h-5" />}
+                            placeholder="App Password"
+                            onChange={(e: any) => setValueName(e.target.value)}
+                            value={valueName}
+                        />
+                        <InputWithLeadingIcon
+                            labelName="Value String"
+                            inputType="text"
+                            inputName="value-string"
+                            leadingIcon={<KeyIcon className="w-5 h-5" />}
+                            placeholder="global.auth.password"
+                            onChange={(e: any) => setValueString(e.target.value)}
+                            value={valueString}
+                        />
+                        <div
+                            className="flex justify-center"
                         >
-                            <PlusIcon className="w-5 h-5 inline-block" /> Add Value
-                        </button>
+                            <button
+                                className="text-primary hover:text-primary-dark block"
+                                onClick={handleAddValue}
+                            >
+                                <PlusIcon className="w-5 h-5 inline-block" /> Add Value
+                            </button>
+                        </div>
                     </div>
-                </div>
+                )}
             </div>
 
             <div
@@ -249,7 +256,10 @@ const EditAppForm = ({ app, setIsOpen }: any) => {
                             return (
                                 <div
                                     key={index}
-                                    className="relative flex bg-gray-200 w-auto py-2 pl-4 pr-12 rounded-lg shadow-md"
+                                    className={classNames(
+                                        user?.group === "admin" ? "pr-12 pl-4" : "px-4",
+                                        "relative flex bg-gray-200 w-auto py-2  rounded-lg shadow-md"
+                                    )}
                                 >
                                     <div
                                         className="text-sm"
@@ -266,36 +276,38 @@ const EditAppForm = ({ app, setIsOpen }: any) => {
                                             {helmPatchValues[index] && helmPatchValues[index].value_string}
                                         </span>
                                     </div>
-                                    <div
-                                        className="absolute right-3"
-                                    >
-                                        <button
-                                            className="text-red-500 hover:text-red-600"
-                                            onClick={() => {
-
-                                                Swal.fire({
-                                                    title: 'Are you sure?',
-                                                    text: "You won't be able to revert this!",
-                                                    icon: 'warning',
-                                                    showCancelButton: true,
-                                                    confirmButtonColor: '#4285F4',
-                                                }).then((result) => {
-                                                    if (result.value) {
-                                                        // remove the value from the array
-                                                        const newHelmPatchValues = [...helmPatchValues];
-                                                        newHelmPatchValues.splice(index, 1);
-                                                        setHelmPatchValues(newHelmPatchValues);
-                                                        // remove the key from the array
-                                                        const newHelmPatchValuesKeys = [...helmPatchValuesKeys];
-                                                        newHelmPatchValuesKeys.splice(index, 1);
-                                                        DefaultAlertMessage("Deleted", "Your value has been deleted.", AlertType.Success);
-                                                    }
-                                                })
-                                            }}
+                                    {user?.group === "admin" && (
+                                        <div
+                                            className="absolute right-3"
                                         >
-                                            <TrashIcon className="w-5 h-5" />
-                                        </button>
-                                    </div>
+                                            <button
+                                                className="text-red-500 hover:text-red-600"
+                                                onClick={() => {
+
+                                                    Swal.fire({
+                                                        title: 'Are you sure?',
+                                                        text: "You won't be able to revert this!",
+                                                        icon: 'warning',
+                                                        showCancelButton: true,
+                                                        confirmButtonColor: '#4285F4',
+                                                    }).then((result) => {
+                                                        if (result.value) {
+                                                            // remove the value from the array
+                                                            const newHelmPatchValues = [...helmPatchValues];
+                                                            newHelmPatchValues.splice(index, 1);
+                                                            setHelmPatchValues(newHelmPatchValues);
+                                                            // remove the key from the array
+                                                            const newHelmPatchValuesKeys = [...helmPatchValuesKeys];
+                                                            newHelmPatchValuesKeys.splice(index, 1);
+                                                            DefaultAlertMessage("Deleted", "Your value has been deleted.", AlertType.Success);
+                                                        }
+                                                    })
+                                                }}
+                                            >
+                                                <TrashIcon className="w-5 h-5" />
+                                            </button>
+                                        </div>
+                                    )}
                                 </div>
                             )
 
@@ -340,17 +352,19 @@ const EditAppForm = ({ app, setIsOpen }: any) => {
                             >
                                 {defaultPatchValuesFile?.name}
                             </div>
-                            <div
-                                className="absolute top-0 right-0 bg-red-500 rounded-lg p-2 shadow-lg cursor-pointer hover:px-4 transition-all duration-150 ease-in-out"
-                                onClick={() => {
-                                    setDefaultPatchValuesString("");
-                                    setDefaultPatchValuesFile(null);
-                                }}
-                            >
-                                <DocumentRemoveIcon className="w-5 h-5 text-white" />
-                            </div>
+                            {user?.group === "admin" && (
+                                <div
+                                    className="absolute top-0 right-0 bg-red-500 rounded-lg p-2 shadow-lg cursor-pointer hover:px-4 transition-all duration-150 ease-in-out"
+                                    onClick={() => {
+                                        setDefaultPatchValuesString("");
+                                        setDefaultPatchValuesFile(null);
+                                    }}
+                                >
+                                    <DocumentRemoveIcon className="w-5 h-5 text-white" />
+                                </div>
+                            )}
                         </div>
-                        : (
+                        : user?.group === "admin" && (
                             <FileInput
                                 inputName="upload-file"
                                 onChange={(e: any) => {
@@ -378,24 +392,27 @@ const EditAppForm = ({ app, setIsOpen }: any) => {
 
 
             </div>
-            <hr className="border-gray-300" />
-
-            <div
-                className=""
-            >
-                <Button
-                    buttonText="Delete"
-                    buttonType={ButtonType.Delete}
-                    onClick={handleDelete}
-                    widthString="float-left"
-                />
-                <Button
-                    buttonText="Save"
-                    buttonType={ButtonType.Primary}
-                    onClick={handleSave}
-                    widthString="float-right"
-                />
-            </div>
+            {user?.group === "admin" && (
+                <>
+                    <hr className="border-gray-300" />
+                    <div
+                        className=""
+                    >
+                        <Button
+                            buttonText="Delete"
+                            buttonType={ButtonType.Delete}
+                            onClick={handleDelete}
+                            widthString="float-left"
+                        />
+                        <Button
+                            buttonText="Save"
+                            buttonType={ButtonType.Primary}
+                            onClick={handleSave}
+                            widthString="float-right"
+                        />
+                    </div>
+                </>
+            )}
 
 
         </div>

@@ -56,7 +56,7 @@ func CreateApp(c *fiber.Ctx) error {
 func GetApps(c *fiber.Ctx) error {
 
 	user, err := CheckAuth(c)
-	if user.ID == 0 || user.Group != models.Admin || err != nil {
+	if user.ID == 0 || err != nil {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 			"message": "Unauthorized",
 		})
@@ -76,7 +76,7 @@ func GetApps(c *fiber.Ctx) error {
 func GetApp(c *fiber.Ctx) error {
 
 	user, err := CheckAuth(c)
-	if user.ID == 0 || user.Group != models.Admin || err != nil {
+	if user.ID == 0 || err != nil {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 			"message": "Unauthorized",
 		})

@@ -22,8 +22,13 @@ export default function LoginForm() {
             try {
                 await loginUser(username, password, remember);
                 router.push('/overview')
-            } catch (error) {
-                DefaultAlertMessage('Login failed', 'Please check your credentials and try again.', AlertType.Error)
+            } catch (error: any) {
+                // if connection error
+                if (error.response.data !== undefined) {
+                    DefaultAlertMessage('Login failed', error.response.data, AlertType.Error)
+                } else {
+                    DefaultAlertMessage('Connection error', error.message, AlertType.Error)
+                }
             }
         } else {
             DefaultAlertMessage('Error', 'Please fill in a valid E-Mail and Password', AlertType.Error)
@@ -116,7 +121,7 @@ export default function LoginForm() {
                             </div>
 
                             <div className="text-sm">
-                                <a href="#" className="font-medium text-primary hover:text-primary">
+                                <a href="/trialcode" className="font-medium text-primary hover:text-primary">
                                     Got a trial code?
                                 </a>
                             </div>

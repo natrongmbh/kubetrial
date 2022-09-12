@@ -1,4 +1,4 @@
-const InputWithLeadingIcon = ({ leadingIcon, labelName, inputType, inputName, placeholder, onChange, value }: any) => {
+const InputWithLeadingIcon = ({ leadingIcon, labelName, inputType, inputName, placeholder, onChange, value, pattern, min, max }: any) => {
     return (
         <div>
             <label htmlFor="email" className="block text-sm font-GilroyMedium text-gray-700">
@@ -16,6 +16,9 @@ const InputWithLeadingIcon = ({ leadingIcon, labelName, inputType, inputName, pl
                     placeholder={placeholder}
                     onChange={onChange}
                     value={value}
+                    pattern={pattern || null}
+                    min={min || null}
+                    max={max || null}
                 />
             </div>
         </div>

@@ -20,8 +20,6 @@ export default function Button({ widthString, inline, buttonType, buttonText, bu
         inline && "inline-block",
     )
 
-
-
     switch (buttonType) {
         case ButtonType.Primary:
             return (
