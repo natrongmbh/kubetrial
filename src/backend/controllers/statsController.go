@@ -7,7 +7,6 @@ import (
 	"github.com/natrongmbh/kubetrial/database"
 	"github.com/natrongmbh/kubetrial/k8s"
 	"github.com/natrongmbh/kubetrial/models"
-	"github.com/natrongmbh/kubetrial/util"
 )
 
 type Stats struct {
@@ -40,9 +39,6 @@ func GetStats(c *fiber.Ctx) error {
 	trialsDeleted := []models.Trial{}
 	database.DBConn.Where("created_at > ?", timeLast30Days).Find(&trials)
 	database.DBConn.Unscoped().Where("deleted_at > ?", timeLast30Days).Find(&trialsDeleted)
-
-	util.InfoLogger.Println("trials", len(trials))
-	util.InfoLogger.Println("trialsDeleted", len(trialsDeleted))
 
 	totalTrials := []models.Trial{}
 	database.DBConn.Find(&totalTrials)

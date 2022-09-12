@@ -32,7 +32,7 @@ const AppsList = () => {
     const [apps, setApps] = useState<App[]>([]);
 
     const { reload }: any = useUserContext();
-    
+
     useEffect(() => {
         (
             async () => {

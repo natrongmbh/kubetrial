@@ -40,7 +40,7 @@ module.exports = {
         'xxxl': ['16rem', '1.2'],
       },
       height: {
-        '128': '32rem', 
+        '128': '32rem',
       }
     },
   },

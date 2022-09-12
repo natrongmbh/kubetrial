@@ -1,6 +1,7 @@
 import { LockClosedIcon } from '@heroicons/react/solid'
 import Cookies from 'js-cookie'
 import Image from 'next/image'
+import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useState } from 'react'
 import { useUserContext } from '../../contexts/userContext'
@@ -22,8 +23,13 @@ export default function LoginForm() {
             try {
                 await loginUser(username, password, remember);
                 router.push('/overview')
-            } catch (error) {
-                DefaultAlertMessage('Login failed', 'Please check your credentials and try again.', AlertType.Error)
+            } catch (error: any) {
+                // if connection error
+                if (error.response.data !== undefined) {
+                    DefaultAlertMessage('Login failed', error.response.data, AlertType.Error)
+                } else {
+                    DefaultAlertMessage('Connection error', error.message, AlertType.Error)
+                }
             }
         } else {
             DefaultAlertMessage('Error', 'Please fill in a valid E-Mail and Password', AlertType.Error)
@@ -116,9 +122,9 @@ export default function LoginForm() {
                             </div>
 
                             <div className="text-sm">
-                                <a href="#" className="font-medium text-primary hover:text-primary">
+                                <Link href="/trialcode" className="font-medium text-primary hover:text-primary">
                                     Got a trial code?
-                                </a>
+                                </Link>
                             </div>
                         </div>
 
