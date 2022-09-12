@@ -18,7 +18,7 @@ export default function Navbar() {
         { name: 'Trials', href: '/trials', current: router.pathname === '/trials', icon: <BeakerIcon className="h-5 w-5 inline" /> },
         { name: 'Apps', href: '/apps', current: router.pathname === '/apps', icon: <CodeIcon className="h-5 w-5 inline" /> },
     ]
-    
+
     const userNavigation = [
         { name: 'Settings', href: '/settings' },
         { name: 'Sign out', href: '/logout' },

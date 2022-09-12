@@ -31,7 +31,7 @@ jobs:
         go get -v -t -d ./...
         go get gopkg.in/check.v1
     - name: Build
-      run: | 
+      run: |
         cd ./src/backend
         go build -v .
   frontend-build:

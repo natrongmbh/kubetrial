@@ -13,7 +13,7 @@ let urls = {
 }
 
 let Api = Axios.create({
-    baseURL: urls[process.env.NODE_ENV], 
+    baseURL: urls[process.env.NODE_ENV],
     headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json'

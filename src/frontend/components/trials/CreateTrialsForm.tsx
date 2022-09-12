@@ -45,7 +45,7 @@ const CreateTrialsForm = ({ setIsOpen }: any) => {
                             <Listbox.Button className="bg-white relative w-full border border-gray-300 rounded-md shadow-sm pl-3 pr-10 py-2 text-left cursor-pointer focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary sm:text-sm">
                                 <span className="block truncate">
                                     {
-                                        selectedApp ? 
+                                        selectedApp ?
                                         selectedApp.name + " <" + selectedApp.helm_chart_name + ":" + selectedApp.helm_chart_version + ">" :
                                         'Select an app'
                                     }

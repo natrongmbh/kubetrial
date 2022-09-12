@@ -5,7 +5,7 @@ import { classNames } from "../../lib/design"
 const Modal = ({ children, title, isOpen, setIsOpen }: any) => {
 
     const [open, setOpen] = useState(false)
-    
+
 
     useEffect(() => {
         setOpen(isOpen)

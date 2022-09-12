@@ -6,7 +6,7 @@ export default function Footer(props: any) {
         <div
             className=""
         >
-            
+
         </div>
     )
 }
