@@ -1,6 +1,7 @@
 import { LockClosedIcon } from '@heroicons/react/solid'
 import Cookies from 'js-cookie'
 import Image from 'next/image'
+import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useState } from 'react'
 import { useUserContext } from '../../contexts/userContext'
@@ -121,9 +122,9 @@ export default function LoginForm() {
                             </div>
 
                             <div className="text-sm">
-                                <a href="/trialcode" className="font-medium text-primary hover:text-primary">
+                                <Link href="/trialcode" className="font-medium text-primary hover:text-primary">
                                     Got a trial code?
-                                </a>
+                                </Link>
                             </div>
                         </div>
 

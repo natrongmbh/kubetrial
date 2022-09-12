@@ -153,6 +153,7 @@ export default function Navbar() {
                         <div className="pt-4 pb-3 border-t border-gray-700">
                             <div className="flex items-center px-5 sm:px-6">
                                 <div className="flex-shrink-0">
+                                    {/* eslint-disable-next-line @next/next/no-img-element */}
                                     <img className="h-10 w-10 rounded-full" src={user.avatar_url} alt="" />
                                 </div>
                                 <div className="ml-3">
