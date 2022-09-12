@@ -9,7 +9,7 @@ import (
 func CreateApp(c *fiber.Ctx) error {
 
 	user, err := CheckAuth(c)
-	if user.ID == 0 || err != nil {
+	if user.ID == 0 || user.Group != models.Admin || err != nil {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 			"message": "Unauthorized",
 		})
@@ -56,7 +56,7 @@ func CreateApp(c *fiber.Ctx) error {
 func GetApps(c *fiber.Ctx) error {
 
 	user, err := CheckAuth(c)
-	if user.ID == 0 || err != nil {
+	if user.ID == 0 || user.Group != models.Admin || err != nil {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 			"message": "Unauthorized",
 		})
@@ -76,7 +76,7 @@ func GetApps(c *fiber.Ctx) error {
 func GetApp(c *fiber.Ctx) error {
 
 	user, err := CheckAuth(c)
-	if user.ID == 0 || err != nil {
+	if user.ID == 0 || user.Group != models.Admin || err != nil {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 			"message": "Unauthorized",
 		})
@@ -94,10 +94,9 @@ func GetApp(c *fiber.Ctx) error {
 }
 
 func UpdateApp(c *fiber.Ctx) error {
-	//TODO fix creating new helm chart patch values when updating app
 
 	user, err := CheckAuth(c)
-	if user.ID == 0 || err != nil {
+	if user.ID == 0 || user.Group != models.Admin || err != nil {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 			"message": "Unauthorized",
 		})
@@ -168,7 +167,7 @@ func UpdateApp(c *fiber.Ctx) error {
 func DeleteApp(c *fiber.Ctx) error {
 
 	user, err := CheckAuth(c)
-	if user.ID == 0 || err != nil {
+	if user.ID == 0 || user.Group != models.Admin || err != nil {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 			"message": "Unauthorized",
 		})

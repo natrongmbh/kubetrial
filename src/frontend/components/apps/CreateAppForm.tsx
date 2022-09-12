@@ -1,4 +1,4 @@
-import { ArchiveIcon, BookmarkAltIcon, DocumentRemoveIcon, KeyIcon, LinkIcon, PlusIcon, TagIcon, TrashIcon } from "@heroicons/react/outline";
+import { ArchiveIcon, BookmarkAltIcon, DocumentRemoveIcon, DocumentTextIcon, KeyIcon, LinkIcon, PlusIcon, TagIcon, TrashIcon } from "@heroicons/react/outline";
 import { useState } from "react";
 import Swal from "sweetalert2";
 import Api from "../../config/Api";
@@ -157,7 +157,7 @@ const CreateAppForm = ({ setIsOpen }: any) => {
                     labelName="Value Name"
                     inputType="text"
                     inputName="value-name"
-                    leadingIcon={<KeyIcon className="w-5 h-5" />}
+                    leadingIcon={<DocumentTextIcon className="w-5 h-5" />}
                     placeholder="App Password"
                     onChange={(e: any) => setValueName(e.target.value)}
                     value={valueName}
@@ -166,7 +166,7 @@ const CreateAppForm = ({ setIsOpen }: any) => {
                     labelName="Value String"
                     inputType="text"
                     inputName="value-string"
-                    leadingIcon={<BookmarkAltIcon className="w-5 h-5" />}
+                    leadingIcon={<KeyIcon className="w-5 h-5" />}
                     placeholder="global.auth.password"
                     onChange={(e: any) => setValueString(e.target.value)}
                     value={valueString}
@@ -277,7 +277,7 @@ const CreateAppForm = ({ setIsOpen }: any) => {
                             </h1>
                             <hr className="my-2 border-primary border-dashed rounded full border-2" />
                             <pre
-                                className="text-sm text-gray-black"
+                                className="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0 bg-gray-200 rounded-lg p-2 overflow-x-scroll scrollbar-hide"
                             >
                                 {defaultPatchValuesString}
                             </pre>

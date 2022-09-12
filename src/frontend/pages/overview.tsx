@@ -1,6 +1,5 @@
 import { NextPage } from "next"
 import Title from "../components/general/Title";
-import ClusterInfo from "../components/overview/CluserInfo";
 import Stats from "../components/overview/Stats";
 import { User, useUserContext } from "../contexts/userContext"
 
@@ -24,14 +23,9 @@ const Dashboard: NextPage = () => {
                 className="grid sm:grid-cols-2 gap-4"
             >
                 <div
-                    className="w-full col-span-2"
+                    className="sm:max-w-3xl w-full mx-auto col-span-2"
                 >
                     <Stats />
-                </div>
-                <div
-                    className="w-full col-span-2"
-                >
-                    <ClusterInfo />
                 </div>
             </div>
         </div>

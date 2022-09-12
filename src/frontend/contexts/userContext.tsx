@@ -11,6 +11,7 @@ export interface User {
     ID: number;
     Username: string;
     Name: string;
+    Group: string;
 }
 
 export const useUserContext = () => {
@@ -24,6 +25,7 @@ type Props = {
 export const UserContextProvider = ({ children }: Props) => {
     const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
+    const [componentLoading, setComponentLoading] = useState(false);
     const [error, setError] = useState(null);
     const [reload, setReload] = useState(false);
     const router = useRouter();
@@ -88,8 +90,11 @@ export const UserContextProvider = ({ children }: Props) => {
     const contextValue = {
         user,
         loading,
+        componentLoading,
         error,
         reload,
+        setLoading,
+        setComponentLoading,
         setReload,
         loginUser,
         logoutUser

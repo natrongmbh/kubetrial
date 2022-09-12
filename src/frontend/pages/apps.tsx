@@ -6,10 +6,13 @@ import Button, { ButtonType } from "../components/general/Button";
 import Modal from "../components/general/Modal";
 import SlideOver from "../components/general/SlideOver";
 import Title from "../components/general/Title";
+import { useUserContext } from "../contexts/userContext";
 
 const Apps = () => {
 
     const [isOpen, setIsOpen] = useState(false);
+
+    const { user }: any = useUserContext();
 
     return (
         <div>
@@ -30,7 +33,7 @@ const Apps = () => {
                     Apps
                 </Title>
                 <p className="text-md mb-10 text-gray-600 sm:text-center px-2">
-                    Apps depend on the Helm chart that you want to use. <br className="sm:block hidden"/>
+                    Apps depend on the Helm chart that you want to use. <br className="sm:block hidden" />
                     You can define which values to use for the Trial Form.
                 </p>
                 <Button
@@ -39,6 +42,7 @@ const Apps = () => {
                     buttonType={ButtonType.PrimaryOutline}
                     buttonIcon={<PlusIcon className="w-5 h-5" />}
                 />
+
             </div>
 
             <div

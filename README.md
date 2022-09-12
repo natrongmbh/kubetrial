@@ -63,11 +63,6 @@ While creating an application you can upload a default `values.yaml` file which 
 Each trial deployment is created in a separate namespace with the prefix `kubetrial-`.  
 The `sales` user can delete the trial deployment at any time.  
 
-### It's free
-
-Everything is free.  
-If you want to support us, you can buy us a beer with a Github Sponsorship or contribute some code.
-
 ### Open Source
 
 Trust me, I'm open source.  

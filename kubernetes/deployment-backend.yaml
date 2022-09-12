@@ -22,14 +22,22 @@ spec:
         env:
           - name: CORS
             value: "*"
-          - name: JWT_SECRET
-            value: ""
-          - name: GITHUB_CLIENT_ID
-            value: ""
-          - name: GITHUB_CLIENT_SECRET
-            value: ""
-          - name: GITHUB_ORGANIZATION
-            value: ""
+        envFrom:
+          - secretRef:
+              name: kubetrial-secrets
         ports:
         - containerPort: 8000
           name: http
+      initContainers:
+        - name: pg-isready
+          image: postgres
+          command:
+          - 'sh'
+          - '-c'
+          - |
+            until pg_isready -h postgresql.kubetrial.svc.cluster.local -p 5432; do
+              echo "Waiting for PostgreSQL to be ready..."
+              sleep 2
+            done
+          - 'echo'
+          - 'PostgreSQL is ready'

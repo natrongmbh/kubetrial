@@ -18,16 +18,14 @@ export default function Navbar() {
         { name: 'Trials', href: '/trials', current: router.pathname === '/trials', icon: <BeakerIcon className="h-5 w-5 inline" /> },
         { name: 'Apps', href: '/apps', current: router.pathname === '/apps', icon: <CodeIcon className="h-5 w-5 inline" /> },
     ]
-
-
-
+    
     const userNavigation = [
         { name: 'Settings', href: '/settings' },
         { name: 'Sign out', href: '/logout' },
     ]
 
     return (
-        <Disclosure as="nav" className="bg-white sm:absolute fixed top-0 w-full sm:shadow-sm shadow-lg z-40">
+        <Disclosure as="nav" className="bg-white sm:absolute fixed top-0 w-full sm:shadow-sm shadow-lg z-30">
             {({ open }) => (
                 <>
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

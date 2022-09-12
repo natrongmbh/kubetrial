@@ -41,7 +41,7 @@ const Trial = () => {
             </div>
 
             <div
-                className="sm:max-w-3xl max-w-full mx-auto "
+                className="sm:max-w-5xl max-w-full mx-auto "
             >
                 <TrialsList />
             </div>
